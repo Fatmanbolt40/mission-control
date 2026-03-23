@@ -599,38 +599,45 @@ const urlParams = new URLSearchParams(window.location.search);
 const API = urlParams.get('api') || '';
 let DEMO_MODE = !API;
 
-// Graceful fetch wrapper for demo mode
-const _origFetch = window.fetch;
-window.fetch = async function(...args) {
-  try {
-    const r = await _origFetch(...args);
-    if (!r.ok && r.status >= 500) throw new Error('Server error');
-    return r;
-  } catch(e) {
-    if (!DEMO_MODE) {
-      DEMO_MODE = true;
-      console.log('Backend unreachable - entering demo mode');
-      loadDemoData();
-    }
-    return { ok: true, status: 200, json: async () => ({}), text: async () => '' };
-  }
-};
-
 const DEMO_STATE = {
-  bot: { running: true, uptime: '12h 34m', pairs: 847, scans: 15234, gas_gwei: 0.01 },
-  gateway: { status: 'active' },
-  wallet: { balance_eth: '0.000948', address: '0x3B0F...f6E' },
+  bot: { running: true, uptime: '12h 34m', pairs: 847, scans: 15234, gas_gwei: 0.01, cycle_ms: 423, last_scan: new Date().toISOString() },
+  gateway: { status: 'active', model: 'gpt-4.1', sessions: 3 },
+  wallet: { balance_eth: '0.000948', address: '0x3B0F...f6E', chain: 'base' },
+  system: { cpu: 12, mem: 45, disk: 62 },
 };
 const DEMO_BOARD = {
-  backlog: [{ id:1, title:'Research new DEX pools', project:'MEV Bot Profitability', priority:'medium' }],
-  todo: [{ id:2, title:'Optimize gas estimation', project:'MEV Bot Profitability', priority:'high' }],
-  in_progress: [{ id:3, title:'Tune profit thresholds', project:'MEV Bot Profitability', priority:'high' }],
-  done: [{ id:4, title:'Deploy flash arb contract', project:'MEV Bot Profitability', priority:'high' },
-         { id:5, title:'Fix P&L pipeline', project:'CLAWD Autonomy', priority:'medium' }],
+  backlog: [
+    { id:1, title:'Research Aerodrome V3 pools', project:'MEV Bot Profitability', priority:'medium', created_at: new Date().toISOString() },
+    { id:6, title:'Add Uniswap V4 hooks scanner', project:'MEV Bot Profitability', priority:'low', created_at: new Date().toISOString() },
+  ],
+  todo: [
+    { id:2, title:'Optimize gas estimation', project:'MEV Bot Profitability', priority:'high', created_at: new Date().toISOString() },
+    { id:7, title:'Build trade replay tool', project:'CLAWD Autonomy', priority:'medium', created_at: new Date().toISOString() },
+  ],
+  in_progress: [
+    { id:3, title:'Tune profit thresholds', project:'MEV Bot Profitability', priority:'high', created_at: new Date().toISOString() },
+    { id:8, title:'Auto-restart on crash', project:'Mission Control Dashboard', priority:'high', created_at: new Date().toISOString() },
+  ],
+  done: [
+    { id:4, title:'Deploy flash arb contract', project:'MEV Bot Profitability', priority:'high', created_at: new Date().toISOString() },
+    { id:5, title:'Fix P&L pipeline bugs', project:'CLAWD Autonomy', priority:'medium', created_at: new Date().toISOString() },
+    { id:9, title:'Animated 2D office', project:'Mission Control Dashboard', priority:'medium', created_at: new Date().toISOString() },
+  ],
 };
+const DEMO_PROJECTS = { projects: [
+  { id:1, name:'MEV Bot Profitability', description:'Make the MEV bot consistently profitable on Base L2', status:'active', color:'#00ff88', progress:35, total_tasks:4, task_counts:{backlog:1,todo:1,in_progress:1,done:1} },
+  { id:2, name:'CLAWD Autonomy', description:'Full autonomous CLAWD - task board, heartbeat, self-improving', status:'active', color:'#aa66ff', progress:40, total_tasks:3, task_counts:{todo:1,done:1,in_progress:1} },
+  { id:3, name:'Mission Control Dashboard', description:'Build and maintain the Mission Control web dashboard', status:'active', color:'#4488ff', progress:66, total_tasks:3, task_counts:{in_progress:1,done:2} },
+]};
+const DEMO_ACTIVITY = [
+  { id:1, action:'task_completed', detail:'Fix P&L pipeline bugs', ts: new Date(Date.now()-3600000).toISOString() },
+  { id:2, action:'task_started', detail:'Tune profit thresholds', ts: new Date(Date.now()-7200000).toISOString() },
+  { id:3, action:'deploy', detail:'Flash arb contract deployed to Base', ts: new Date(Date.now()-14400000).toISOString() },
+  { id:4, action:'task_completed', detail:'Animated 2D office built', ts: new Date(Date.now()-18000000).toISOString() },
+];
 const DEMO_TEAM = {
-  mission_statement: 'Generate consistent profit through MEV flash loan arbitrage on Base L2. Current war chest: ~0.000948 ETH (~$3.60). Flash loans require zero capital — only gas. At ~$0.001/TX on Base, we have ~948 shots.',
-  leader: { name:'CLAWD', role:'Universal Autonomous Agent — Lead', model:'github-copilot/gpt-4.1', device:'Windows 11', status:'active', avatar:'H', capabilities:['Code','Trade','Deploy','Monitor','Self-Extend'] },
+  mission_statement: 'Generate consistent profit through MEV flash loan arbitrage on Base L2. Current war chest: ~0.000948 ETH (~$3.60). Flash loans require zero capital \u2014 only gas. At ~$0.001/TX on Base, we have ~948 shots. Scale from dust to dominance.',
+  leader: { name:'CLAWD', role:'Universal Autonomous Agent \u2014 Lead', model:'github-copilot/gpt-4.1', device:'Windows 11', status:'active', avatar:'H', capabilities:['Code','Trade','Deploy','Monitor','Self-Extend'] },
   agents: [
     { name:'MEV Operator', role:'Flash loan arbitrage execution', status:'active' },
     { name:'Chain Investigator', role:'On-chain forensics & research', status:'active' },
@@ -638,7 +645,58 @@ const DEMO_TEAM = {
     { name:'System Monitor', role:'Infrastructure monitoring', status:'active' },
     { name:'Trade Analyst', role:'P&L analysis & strategy', status:'active' },
   ],
-  tools: [], skills: [],
+  tools: [{name:'task_board.py',desc:'Manage tasks'},{name:'mev_status.py',desc:'MEV bot control'},{name:'system_monitor.py',desc:'System health'}],
+  skills: [{name:'trading',description:'MEV strategies'},{name:'security',description:'Contract auditing'},{name:'devops',description:'Infrastructure'}],
+};
+const DEMO_MEMORIES = [
+  { filename:'2026-03-23.md', date:'2026-03-23', preview:'Built animated 2D office. Deployed to GitHub Pages. MEV bot scanning...' },
+  { filename:'2026-03-22.md', date:'2026-03-22', preview:'Fixed P&L pipeline. 5 bugs found and fixed. Trade analysis improvements.' },
+];
+const DEMO_DOCS = [
+  { name:'eth_now.py', category:'MEV Bot', size:5500, path:'eth_now/eth_now.py' },
+  { name:'mission_control.py', category:'Dashboard', size:2600, path:'eth_now/mission_control.py' },
+  { name:'mc_db.py', category:'Database', size:200, path:'eth_now/mc_db.py' },
+];
+const DEMO_SESSIONS = [];
+const DEMO_CALENDAR = [];
+
+// Route demo data based on URL
+const DEMO_ROUTES = {
+  '/api/state': DEMO_STATE,
+  '/api/board': DEMO_BOARD,
+  '/api/projects': DEMO_PROJECTS,
+  '/api/activity': DEMO_ACTIVITY,
+  '/api/team': DEMO_TEAM,
+  '/api/memories': DEMO_MEMORIES,
+  '/api/docs': DEMO_DOCS,
+  '/api/sessions': DEMO_SESSIONS,
+  '/api/calendar': DEMO_CALENDAR,
+  '/healthz': { status: 'ok', ts: Date.now()/1000 },
+};
+
+// Graceful fetch wrapper for demo mode
+const _origFetch = window.fetch;
+window.fetch = async function(url, ...rest) {
+  if (DEMO_MODE || !API) {
+    // Extract path from URL
+    const path = typeof url === 'string' ? (url.startsWith('http') ? new URL(url).pathname : url) : url;
+    for (const [route, data] of Object.entries(DEMO_ROUTES)) {
+      if (path.endsWith(route) || path === route) {
+        return { ok: true, status: 200, json: async () => JSON.parse(JSON.stringify(data)), text: async () => JSON.stringify(data) };
+      }
+    }
+    return { ok: true, status: 200, json: async () => ({}), text: async () => '{}' };
+  }
+  try {
+    const r = await _origFetch(url, ...rest);
+    if (!r.ok && r.status >= 500) throw new Error('Server error');
+    return r;
+  } catch(e) {
+    DEMO_MODE = true;
+    console.log('Backend unreachable - entering demo mode');
+    loadDemoData();
+    return window.fetch(url, ...rest); // retry with demo data
+  }
 };
 
 function loadDemoData() {
@@ -646,9 +704,12 @@ function loadDemoData() {
   document.getElementById('gw-dot').className = 'dot on';
   const banner = document.createElement('div');
   banner.style.cssText = 'background:#1a1a0d;color:#ffaa00;text-align:center;padding:6px;font-size:11px;border-bottom:1px solid #333';
-  banner.textContent = 'DEMO MODE — Connect to live backend with ?api=http://your-server:port';
+  banner.innerHTML = 'DEMO MODE \u2014 <a href="?api=http://localhost:8063" style="color:#4488ff">Connect to local backend</a> or deploy your own';
   document.querySelector('.top-bar').after(banner);
 }
+
+// Auto-init demo mode on load
+if (DEMO_MODE) { setTimeout(loadDemoData, 100); }
 let state = {};
 let calYear, calMonth;
 { const d = new Date(); calYear = d.getFullYear(); calMonth = d.getMonth(); }
