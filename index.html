@@ -596,8 +596,9 @@ tr:hover { background: var(--bg3); }
 // GitHub Pages Mode: configurable backend URL
 // Use ?api=http://your-server:8062 to connect to live Mission Control
 const urlParams = new URLSearchParams(window.location.search);
-const API = urlParams.get('api') || '';
-let DEMO_MODE = !API;
+const TUNNEL_URL = 'https://til-cases-rights-deluxe.trycloudflare.com';
+const API = urlParams.get('api') || TUNNEL_URL;
+let DEMO_MODE = false;
 
 const DEMO_STATE = {
   bot: { running: true, uptime: '12h 34m', pairs: 847, scans: 15234, gas_gwei: 0.01, cycle_ms: 423, last_scan: new Date().toISOString() },
@@ -709,8 +710,23 @@ function loadDemoData() {
   document.querySelector('.top-bar').after(banner);
 }
 
-// Auto-init demo mode on load
-if (DEMO_MODE) { setTimeout(loadDemoData, 100); }
+// Auto-init: try to reach backend, fall back to demo if unreachable
+(async () => {
+  try {
+    const r = await _origFetch(API + '/healthz', { signal: AbortSignal.timeout(5000) });
+    if (r.ok) {
+      document.getElementById('bot-dot').className = 'dot on';
+      document.getElementById('gw-dot').className = 'dot on';
+      const banner = document.createElement('div');
+      banner.style.cssText = 'background:#0d1a0d;color:#00ff88;text-align:center;padding:6px;font-size:11px;border-bottom:1px solid #1a4a1a';
+      banner.textContent = 'LIVE \u2014 Connected to Mission Control backend';
+      document.querySelector('.top-bar').after(banner);
+    } else throw new Error('not ok');
+  } catch(e) {
+    DEMO_MODE = true;
+    loadDemoData();
+  }
+})();
 let state = {};
 let calYear, calMonth;
 { const d = new Date(); calYear = d.getFullYear(); calMonth = d.getMonth(); }
