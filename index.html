@@ -596,7 +596,7 @@ tr:hover { background: var(--bg3); }
 // GitHub Pages: connect to live Mission Control via Cloudflare tunnel
 // Override with ?api=http://your-server:port
 const urlParams = new URLSearchParams(window.location.search);
-const TUNNEL_URL = 'https://til-cases-rights-deluxe.trycloudflare.com';
+const TUNNEL_URL = 'https://virgin-traditional-amy-cord.trycloudflare.com';
 const API = urlParams.get('api') || TUNNEL_URL;
 
 // Connection status check
@@ -630,11 +630,16 @@ document.querySelectorAll('.tab').forEach(t => {
     t.classList.add('active');
     document.getElementById('tab-' + t.dataset.tab).classList.add('active');
     if (t.dataset.tab === 'board') { refreshBoard(); refreshActivity(); }
+    if (t.dataset.tab === 'command') refreshTasks();
+    if (t.dataset.tab === 'mev') { refreshState(); refreshLog(); }
+    if (t.dataset.tab === 'trades') refreshState();
     if (t.dataset.tab === 'calendar') refreshCalendar();
     if (t.dataset.tab === 'projects') refreshProjects();
+    if (t.dataset.tab === 'sessions') refreshSessions();
     if (t.dataset.tab === 'memory') refreshMemories();
     if (t.dataset.tab === 'docs') refreshDocs();
     if (t.dataset.tab === 'team') refreshTeam();
+    if (t.dataset.tab === 'system') refreshSystem();
     if (t.dataset.tab === 'office') { renderOffice(); }
     else { OFC.stop(); }
   });
@@ -714,8 +719,11 @@ async function refreshState() {
     renderTradesTable();
     // Bot status dot
     document.getElementById('bot-dot').className = 'dot ' + (state.bot?.running ? 'on' : 'off');
+    // Gateway dot — set on any successful API call
+    document.getElementById('gw-dot').className = 'dot on';
   } catch(e) {
     document.getElementById('bot-dot').className = 'dot off';
+    document.getElementById('gw-dot').className = 'dot off';
   }
 }
 
@@ -832,9 +840,13 @@ async function refreshSessions() {
 
     // Cron jobs
     const cronEl = document.getElementById('cron-jobs');
-    if (cronData.jobs && cronData.jobs.length) {
+    const cronJobs = Array.isArray(cronData.jobs) ? cronData.jobs : (cronData.jobs?.jobs || []);
+    if (cronJobs.length) {
       cronEl.innerHTML = '<table><thead><tr><th>Name</th><th>Schedule</th><th>Enabled</th></tr></thead><tbody>' +
-        cronData.jobs.map(j => `<tr><td>${esc(j.name||j.id||'')}</td><td>${esc(j.schedule||j.cron||'')}</td><td>${j.enabled !== false ? '✅' : '❌'}</td></tr>`).join('') +
+        cronJobs.map(j => {
+          const sched = typeof j.schedule === 'string' ? j.schedule : (j.schedule?.kind === 'every' ? `Every ${Math.round((j.schedule.everyMs||0)/60000)}m` : j.cron || JSON.stringify(j.schedule||''));
+          return `<tr><td>${esc(j.name||j.id||'')}</td><td>${esc(sched)}</td><td>${j.enabled !== false ? '✅' : '❌'}</td></tr>`;
+        }).join('') +
         '</tbody></table>';
     }
 
@@ -1116,18 +1128,20 @@ function renderCalendar() {
 
 function renderCronJobs() {
   const el = document.getElementById('cron-job-list');
-  const jobs = _calData.cron_jobs || [];
+  const jobs = Array.isArray(_calData.cron_jobs) ? _calData.cron_jobs : (_calData.cron_jobs?.jobs || []);
   if (!jobs.length) { el.innerHTML = '<div style="color:var(--dim)">No cron jobs found.</div>'; return; }
-  el.innerHTML = jobs.map(j => `
+  el.innerHTML = jobs.map(j => {
+    const sched = typeof j.schedule === 'string' ? j.schedule : (j.schedule?.kind === 'every' ? `Every ${Math.round((j.schedule.everyMs||0)/60000)}m` : j.cron || JSON.stringify(j.schedule||''));
+    return `
     <div class="cron-list-item">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <span style="font-weight:bold">${esc(j.name||j.id||'')}</span>
         <span style="color:${j.enabled!==false?'var(--green)':'var(--red)'}">${j.enabled!==false?'ENABLED':'DISABLED'}</span>
       </div>
-      <div style="margin-top:4px"><span class="cron-schedule">${esc(j.schedule||j.cron||'')}</span></div>
+      <div style="margin-top:4px"><span class="cron-schedule">${esc(sched)}</span></div>
       ${j.delivery?`<div style="font-size:11px;color:var(--dim);margin-top:2px">Delivers to: ${esc(JSON.stringify(j.delivery).slice(0,60))}</div>`:''}
     </div>
-  `).join('');
+  `}).join('');
 }
 
 function renderCronRuns() {
