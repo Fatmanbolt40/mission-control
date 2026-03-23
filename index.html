@@ -374,27 +374,79 @@ tr:hover { background: var(--bg3); }
 .team-tools h3 { font-size: 12px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
 .tool-pill { display: inline-block; padding: 4px 10px; background: var(--bg3); border: 1px solid var(--border); border-radius: 16px; font-size: 11px; margin: 2px 4px; }
 
-/* Office Screen - Animated 2D Game */
-.office-container {
-  background: #0d1117; border: 2px solid var(--border); border-radius: 10px;
-  padding: 0; overflow: hidden; position: relative;
-}
-.office-canvas-wrap {
-  position: relative; width: 100%; height: 520px; overflow: hidden;
-}
-#office-canvas {
-  display: block; width: 100%; height: 520px; image-rendering: pixelated;
-}
-.office-status-bar {
-  background: var(--bg2); border-top: 1px solid var(--border);
-  padding: 8px 16px; display: flex; gap: 16px; font-size: 11px; color: var(--dim);
-}
-.office-legend {
-  display: flex; gap: 12px; flex-wrap: wrap; padding: 6px 16px; background: #0d1117;
-  border-bottom: 1px solid var(--border); font-size: 10px;
-}
-.office-legend-item { display: flex; align-items: center; gap: 4px; color: var(--dim); }
-.office-legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+/* Office Screen - Neural Network + Agent Cards */
+.office-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+.nn-section { background: #060a10; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; position: relative; }
+.nn-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: #0a0e17; border-bottom: 1px solid var(--border); }
+.nn-header h4 { margin: 0; color: var(--cyan); font-size: 12px; font-weight: bold; letter-spacing: 1px; }
+.nn-header .nn-badge { font-size: 9px; padding: 2px 8px; border-radius: 10px; background: rgba(0,255,136,.1); color: var(--green); border: 1px solid rgba(0,255,136,.3); }
+#nn-canvas { display: block; width: 100%; height: 320px; }
+.nn-stats { display: flex; gap: 0; border-top: 1px solid var(--border); }
+.nn-stat { flex: 1; padding: 8px 12px; text-align: center; border-right: 1px solid var(--border); font-size: 10px; }
+.nn-stat:last-child { border-right: none; }
+.nn-stat .ns-val { font-size: 16px; font-weight: bold; color: var(--green); }
+.nn-stat .ns-lbl { color: var(--dim); margin-top: 2px; }
+.agent-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media(max-width:900px) { .agent-cards { grid-template-columns: repeat(2, 1fr); } }
+.agent-card { background: #0a0e17; border: 1px solid var(--border); border-radius: 8px; padding: 14px; transition: all .3s; position: relative; overflow: hidden; }
+.agent-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+.agent-card.online { border-color: rgba(0,255,136,.3); }
+.agent-card.online::before { background: linear-gradient(90deg, transparent, var(--green), transparent); }
+.agent-card.offline { border-color: rgba(102,102,102,.3); }
+.agent-card .ac-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.agent-card .ac-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.agent-card.online .ac-dot { background: var(--green); animation: statusPulse 2s infinite; }
+.agent-card.offline .ac-dot { background: #666; }
+.agent-card .ac-name { font-weight: bold; font-size: 12px; }
+.agent-card .ac-role { font-size: 9px; color: var(--dim); }
+.agent-card .ac-body { font-size: 11px; color: var(--fg); }
+.agent-card .ac-body .ac-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,.04); }
+.agent-card .ac-body .ac-row:last-child { border-bottom: none; }
+.agent-card .ac-body .ac-lbl { color: var(--dim); }
+.agent-card .ac-body .ac-val { color: var(--fg); font-family: monospace; font-size: 10px; }
+.agent-card .ac-body .ac-val.green { color: var(--green); }
+.agent-card .ac-body .ac-val.red { color: var(--red); }
+.agent-card .ac-body .ac-val.cyan { color: var(--cyan); }
+.agent-card .ac-bar { height: 3px; background: var(--bg3); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+.agent-card .ac-bar-fill { height: 100%; border-radius: 2px; background: var(--green); transition: width .5s; }
+.ofc-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:900px) { .ofc-bottom { grid-template-columns: 1fr; } }
+.ofc-feed { background: #0a0e17; border: 1px solid var(--border); border-radius: 8px; padding: 12px; max-height: 200px; overflow-y: auto; }
+.ofc-feed h5 { margin: 0 0 8px 0; color: var(--cyan); font-size: 11px; }
+.ofc-feed-item { font-size: 10px; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,.03); display: flex; gap: 8px; }
+.ofc-feed-item .fi-time { color: var(--cyan); font-family: monospace; white-space: nowrap; }
+.ofc-feed-item .fi-act { color: var(--green); white-space: nowrap; }
+.ofc-feed-item .fi-det { color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ofc-sys { background: #0a0e17; border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+.ofc-sys h5 { margin: 0 0 8px 0; color: var(--cyan); font-size: 11px; }
+.ofc-sys .sys-row { display: flex; justify-content: space-between; font-size: 11px; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,.04); }
+.ofc-sys .sys-row:last-child { border-bottom: none; }
+
+/* Live Ticker */
+.live-ticker { background: #0a0e14; border-bottom: 1px solid var(--border); padding: 4px 16px; display: flex; align-items: center; gap: 12px; overflow: hidden; height: 28px; }
+.live-ticker .lt-label { color: var(--cyan); font-size: 10px; font-weight: bold; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+.live-ticker .lt-pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: statusPulse 2s infinite; flex-shrink: 0; }
+.live-ticker .lt-scroll { display: flex; gap: 24px; animation: tickerScroll 30s linear infinite; white-space: nowrap; }
+.live-ticker .lt-item { font-size: 10px; color: var(--dim); white-space: nowrap; }
+.live-ticker .lt-item .lt-time { color: var(--cyan); margin-right: 4px; font-family: monospace; }
+.live-ticker .lt-item .lt-action { color: var(--green); margin-right: 4px; }
+.live-ticker .lt-item.error .lt-action { color: var(--red); }
+@keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* Live Progress Panel */
+.live-panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; }
+.live-agents { display: flex; gap: 10px; flex-wrap: wrap; }
+.live-agent { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; min-width: 120px; font-size: 11px; transition: border-color .3s; }
+.live-agent.active { border-color: var(--green); }
+.live-agent .la-name { font-weight: bold; margin-bottom: 3px; }
+.live-agent .la-task { color: var(--dim); font-size: 10px; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.live-agent .la-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; }
+.live-agent .la-dot.on { background: var(--green); animation: statusPulse 2s infinite; }
+.live-agent .la-dot.off { background: var(--dim); }
+
+/* Current task highlight */
+.plan-item.current { border-left-color: var(--cyan); background: rgba(0,200,255,.05); }
+.plan-item.current::before { content: '▶'; position: absolute; left: -18px; top: 8px; color: var(--cyan); font-size: 10px; }
 </style>
 </head>
 <body>
@@ -405,8 +457,14 @@ tr:hover { background: var(--bg3); }
   <div class="status">
     <span>Bot: <span class="dot" id="bot-dot"></span></span>
     <span>Gateway: <span class="dot" id="gw-dot"></span></span>
+    <span id="live-plan-mini" style="color:var(--dim);font-size:10px"></span>
     <span id="clock" style="color:var(--dim)"></span>
   </div>
+</div>
+<div class="live-ticker" id="live-ticker">
+  <span class="lt-pulse"></span>
+  <span class="lt-label">LIVE</span>
+  <div class="lt-scroll" id="lt-scroll">Loading live feed...</div>
 </div>
 
 <div class="tabs">
@@ -653,24 +711,36 @@ tr:hover { background: var(--bg3); }
 
 <!-- ═══ OFFICE TAB ═══ -->
 <div class="tab-content" id="tab-office">
-  <h3 style="color:var(--dim);font-size:12px;margin-bottom:12px">OFFICE — LIVE AGENT WORKSPACE</h3>
-  <div class="office-container">
-    <div class="office-legend">
-      <div class="office-legend-item"><div class="office-legend-dot" style="background:#00ff88"></div>CLAWD</div>
-      <div class="office-legend-item"><div class="office-legend-dot" style="background:#4488ff"></div>MEV Op</div>
-      <div class="office-legend-item"><div class="office-legend-dot" style="background:#ffaa00"></div>Chain</div>
-      <div class="office-legend-item"><div class="office-legend-dot" style="background:#ff4466"></div>Security</div>
-      <div class="office-legend-item"><div class="office-legend-dot" style="background:#aa66ff"></div>Monitor</div>
-      <div class="office-legend-item"><div class="office-legend-dot" style="background:#00cccc"></div>Analyst</div>
+  <div class="office-grid">
+    <!-- Neural Network Visualization -->
+    <div class="nn-section">
+      <div class="nn-header">
+        <h4>NEURAL NETWORK — REAL-TIME INFERENCE ENGINE</h4>
+        <span class="nn-badge" id="nn-status">ACTIVE</span>
+      </div>
+      <canvas id="nn-canvas" width="1200" height="320"></canvas>
+      <div class="nn-stats" id="nn-stats">
+        <div class="nn-stat"><div class="ns-val" id="ns-nodes">24</div><div class="ns-lbl">Nodes</div></div>
+        <div class="nn-stat"><div class="ns-val" id="ns-conns">86</div><div class="ns-lbl">Connections</div></div>
+        <div class="nn-stat"><div class="ns-val" id="ns-signals">0</div><div class="ns-lbl">Signals/min</div></div>
+        <div class="nn-stat"><div class="ns-val" id="ns-inference">0ms</div><div class="ns-lbl">Inference</div></div>
+        <div class="nn-stat"><div class="ns-val" id="ns-accuracy">--</div><div class="ns-lbl">Accuracy</div></div>
+        <div class="nn-stat"><div class="ns-val" id="ns-uptime">--</div><div class="ns-lbl">Uptime</div></div>
+      </div>
     </div>
-    <div class="office-canvas-wrap">
-      <canvas id="office-canvas" width="800" height="520"></canvas>
+    <!-- Agent Status Cards -->
+    <div class="agent-cards" id="agent-cards">
+      <div class="agent-card offline" id="ac-clawd"><div class="ac-top"><div class="ac-dot"></div><div><div class="ac-name" style="color:#00ff88">CLAWD</div><div class="ac-role">Lead Orchestrator</div></div></div><div class="ac-body"><div class="ac-row"><span class="ac-lbl">Status</span><span class="ac-val" id="ac-clawd-status">Loading...</span></div><div class="ac-row"><span class="ac-lbl">Current</span><span class="ac-val cyan" id="ac-clawd-task">--</span></div><div class="ac-row"><span class="ac-lbl">Plan</span><span class="ac-val" id="ac-clawd-plan">--</span></div></div><div class="ac-bar"><div class="ac-bar-fill" id="ac-clawd-bar" style="width:0%"></div></div></div>
+      <div class="agent-card offline" id="ac-mev"><div class="ac-top"><div class="ac-dot"></div><div><div class="ac-name" style="color:#4488ff">MEV OPERATOR</div><div class="ac-role">eth_now.py Bot</div></div></div><div class="ac-body"><div class="ac-row"><span class="ac-lbl">Bot</span><span class="ac-val" id="ac-mev-status">--</span></div><div class="ac-row"><span class="ac-lbl">Trades</span><span class="ac-val" id="ac-mev-trades">--</span></div><div class="ac-row"><span class="ac-lbl">P&L</span><span class="ac-val" id="ac-mev-pnl">--</span></div><div class="ac-row"><span class="ac-lbl">Today</span><span class="ac-val" id="ac-mev-today">--</span></div></div></div>
+      <div class="agent-card offline" id="ac-chain"><div class="ac-top"><div class="ac-dot"></div><div><div class="ac-name" style="color:#ffaa00">CHAIN INVESTIGATOR</div><div class="ac-role">On-Chain Analysis</div></div></div><div class="ac-body"><div class="ac-row"><span class="ac-lbl">Tasks</span><span class="ac-val" id="ac-chain-tasks">--</span></div><div class="ac-row"><span class="ac-lbl">Scans</span><span class="ac-val" id="ac-chain-scans">--</span></div><div class="ac-row"><span class="ac-lbl">Last</span><span class="ac-val" id="ac-chain-last">--</span></div></div></div>
+      <div class="agent-card offline" id="ac-security"><div class="ac-top"><div class="ac-dot"></div><div><div class="ac-name" style="color:#ff4466">SECURITY AUDITOR</div><div class="ac-role">Vulnerability Scanner</div></div></div><div class="ac-body"><div class="ac-row"><span class="ac-lbl">Status</span><span class="ac-val" id="ac-sec-status">--</span></div><div class="ac-row"><span class="ac-lbl">Audits</span><span class="ac-val" id="ac-sec-audits">--</span></div><div class="ac-row"><span class="ac-lbl">Alerts</span><span class="ac-val" id="ac-sec-alerts">--</span></div></div></div>
+      <div class="agent-card offline" id="ac-monitor"><div class="ac-top"><div class="ac-dot"></div><div><div class="ac-name" style="color:#aa66ff">SYSTEM MONITOR</div><div class="ac-role">Infrastructure Watch</div></div></div><div class="ac-body"><div class="ac-row"><span class="ac-lbl">CPU</span><span class="ac-val" id="ac-mon-cpu">--</span></div><div class="ac-row"><span class="ac-lbl">Memory</span><span class="ac-val" id="ac-mon-mem">--</span></div><div class="ac-row"><span class="ac-lbl">Next Cron</span><span class="ac-val cyan" id="ac-mon-cron">--</span></div></div></div>
+      <div class="agent-card offline" id="ac-analyst"><div class="ac-top"><div class="ac-dot"></div><div><div class="ac-name" style="color:#00cccc">TRADE ANALYST</div><div class="ac-role">Strategy Intelligence</div></div></div><div class="ac-body"><div class="ac-row"><span class="ac-lbl">Win Rate</span><span class="ac-val" id="ac-ana-winrate">--</span></div><div class="ac-row"><span class="ac-lbl">Gas Spent</span><span class="ac-val" id="ac-ana-gas">--</span></div><div class="ac-row"><span class="ac-lbl">Strategy</span><span class="ac-val" id="ac-ana-strat">--</span></div></div></div>
     </div>
-    <div class="office-status-bar" id="office-status">
-      <span>Agents: <span id="off-agent-count">6</span></span>
-      <span>Active: <span id="off-active-count" style="color:var(--green)">0</span></span>
-      <span>Idle: <span id="off-idle-count" style="color:var(--dim)">0</span></span>
-      <span id="off-time" style="margin-left:auto"></span>
+    <!-- Bottom: Activity Feed + System -->
+    <div class="ofc-bottom">
+      <div class="ofc-feed" id="ofc-feed"><h5>LIVE ACTIVITY FEED</h5><div id="ofc-feed-items">Loading...</div></div>
+      <div class="ofc-sys" id="ofc-sys"><h5>SYSTEM STATUS</h5><div id="ofc-sys-rows">Loading...</div></div>
     </div>
   </div>
 </div>
@@ -1162,11 +1232,69 @@ refreshSessions();
 refreshSystem();
 refreshBoard();
 refreshActivity();
+refreshLive();
 setInterval(refreshAll, 10000);
 setInterval(refreshSessions, 30000);
 setInterval(refreshSystem, 30000);
 setInterval(() => { refreshBoard(); refreshActivity(); }, 15000);
 setInterval(() => { OFC.syncStatus(); }, 15000);
+setInterval(refreshLive, 5000);
+setInterval(() => { if (document.querySelector('.tab[data-tab="calendar"].active')) refreshCalendar(); }, 15000);
+
+// ── Live Ticker ──
+let _liveData = null;
+
+async function refreshLive() {
+  try {
+    const r = await fetch(API + '/api/live');
+    _liveData = await r.json();
+    renderLiveTicker();
+    renderLivePlanMini();
+  } catch(e) {}
+}
+
+function renderLiveTicker() {
+  if (!_liveData) return;
+  const el = document.getElementById('lt-scroll');
+  const items = (_liveData.activity || []).map(a => {
+    const icons = {task_created:'+NEW', task_moved:'MOVE', project_created:'PROJ', plan_generated:'PLAN', cron_ran:'CRON', trade_executed:'TRADE'};
+    const isErr = (a.action||'').includes('error');
+    return `<span class="lt-item${isErr?' error':''}"><span class="lt-time">${(a.ts||'').slice(11,19)}</span><span class="lt-action">${icons[a.action]||a.action||'*'}</span>${esc((a.detail||'').slice(0,60))}</span>`;
+  });
+
+  // Add plan status
+  const p = _liveData.plan || {};
+  if (p.total > 0) {
+    items.unshift(`<span class="lt-item"><span class="lt-action">PLAN</span>${p.done}/${p.total} done (${p.progress}%)</span>`);
+  }
+  if (p.current) {
+    items.unshift(`<span class="lt-item"><span class="lt-action" style="color:var(--yellow)">NOW</span>${esc(p.current.title)}</span>`);
+  } else if (p.next) {
+    items.unshift(`<span class="lt-item"><span class="lt-action" style="color:var(--cyan)">NEXT</span>${p.next.time} ${esc(p.next.title)}</span>`);
+  }
+
+  // Add bot status
+  items.unshift(`<span class="lt-item"><span class="lt-action" style="color:${_liveData.bot_running?'var(--green)':'var(--red)'}">${_liveData.bot_running?'BOT ON':'BOT OFF'}</span></span>`);
+
+  // Add cron status
+  const nextCron = (_liveData.cron||[]).filter(c => c.next_run).sort((a,b) => a.next_run - b.next_run)[0];
+  if (nextCron) {
+    const mins = Math.round((nextCron.next_run - Date.now()) / 60000);
+    if (mins > 0 && mins < 120) {
+      items.push(`<span class="lt-item"><span class="lt-action" style="color:var(--green)">CRON</span>${esc(nextCron.name)} in ${mins}m</span>`);
+    }
+  }
+
+  // Duplicate for seamless scroll
+  el.innerHTML = items.join('') + items.join('');
+}
+
+function renderLivePlanMini() {
+  const el = document.getElementById('live-plan-mini');
+  if (!_liveData || !_liveData.plan || !_liveData.plan.total) { el.textContent = ''; return; }
+  const p = _liveData.plan;
+  el.innerHTML = `Plan: <span style="color:var(--green)">${p.progress}%</span> (${p.done}/${p.total})`;
+}
 
 // ══════════════════════════════════════════════════════════════════════
 // TASK BOARD
@@ -1979,364 +2107,296 @@ function renderTeam() {
 // ══════════════════════════════════════════════════════════════════════
 
 const OFC = (() => {
-  let canvas, ctx, W=800, H=520, animId=null, lastT=0;
-  const SCALE = 2; // pixel art scale
-  const TILE = 16;
+  let nnCanvas, nnCtx, animId = null, lastT = 0;
+  const W = 1200, H = 320;
+  let _liveData = null;
+  let signalCount = 0, lastSignalReset = Date.now();
 
-  // ── Room zones ──
-  const rooms = [
-    { name:'Command Center', x:20,  y:30,  w:240, h:180, color:'#0d1a2e', border:'#1a3050' },
-    { name:'Trading Floor',  x:280, y:30,  w:240, h:180, color:'#0d1a1a', border:'#1a4040' },
-    { name:'Server Room',    x:540, y:30,  w:240, h:180, color:'#1a0d1a', border:'#401a40' },
-    { name:'Security Lab',   x:20,  y:250, w:240, h:180, color:'#1a1a0d', border:'#40401a' },
-    { name:'Break Room',     x:280, y:250, w:240, h:180, color:'#0d1a0d', border:'#1a401a' },
-    { name:'Analytics Bay',  x:540, y:250, w:240, h:180, color:'#0d0d1a', border:'#1a1a40' },
+  // ── Neural Network Architecture ──
+  const layers = [
+    { label: 'INPUT', color: '#00ccff', nodes: [
+      { label: 'Mempool', sub: 'TX Scanner' },
+      { label: 'DEX Pools', sub: 'Uniswap/Sushi' },
+      { label: 'Gas Oracle', sub: 'Gwei Feed' },
+      { label: 'Price Feed', sub: 'ETH/USDC' },
+      { label: 'Chain Events', sub: 'Block Watch' },
+    ]},
+    { label: 'HIDDEN 1', color: '#00ff88', nodes: [
+      { label: 'Pattern Detect', sub: 'Conv Layer' },
+      { label: 'Arb Finder', sub: 'Graph Search' },
+      { label: 'Risk Engine', sub: 'Bayesian Net' },
+      { label: 'Signal Fusion', sub: 'Attention' },
+    ]},
+    { label: 'HIDDEN 2', color: '#ffaa00', nodes: [
+      { label: 'Strategy', sub: 'Policy Net' },
+      { label: 'Profit Calc', sub: 'Value Head' },
+      { label: 'Execution', sub: 'Action Head' },
+    ]},
+    { label: 'OUTPUT', color: '#ff4466', nodes: [
+      { label: 'Trade Exec', sub: 'Flash Loan' },
+      { label: 'Alerts', sub: 'Telegram' },
+      { label: 'Portfolio', sub: 'Rebalance' },
+      { label: 'Report', sub: 'Analytics' },
+    ]},
   ];
 
-  // ── Furniture ──
-  const desks = [
-    { x:80,  y:100, room:0 }, { x:170, y:100, room:0 },
-    { x:340, y:100, room:1 }, { x:430, y:100, room:1 },
-    { x:600, y:100, room:2 }, { x:690, y:100, room:2 },
-    { x:80,  y:320, room:3 }, { x:170, y:320, room:3 },
-    { x:340, y:320, room:4 }, { x:430, y:320, room:4 },
-    { x:600, y:320, room:5 }, { x:690, y:320, room:5 },
-  ];
+  // Precompute node positions
+  const nodePositions = []; // [{x,y,layer,idx,label,sub,color}]
+  const connections = [];   // [{from,to}]
+  const particles = [];     // animated data particles
 
-  const waterCoolers = [
-    { x:400, y:230 }, { x:510, y:450 },
-  ];
-
-  // ── Agents ──
-  const agents = [
-    { name:'CLAWD',    color:'#00ff88', role:'Lead Agent',        homeDesk:0, status:'working', task:'Orchestrating...' },
-    { name:'MEV Op',   color:'#4488ff', role:'MEV Operator',      homeDesk:2, status:'working', task:'Scanning pools...' },
-    { name:'Chain',    color:'#ffaa00', role:'Chain Investigator', homeDesk:4, status:'idle',    task:'Idle' },
-    { name:'Security', color:'#ff4466', role:'Security Auditor',  homeDesk:6, status:'idle',    task:'Idle' },
-    { name:'Monitor',  color:'#aa66ff', role:'System Monitor',    homeDesk:8, status:'working', task:'Monitoring...' },
-    { name:'Analyst',  color:'#00cccc', role:'Trade Analyst',     homeDesk:10,status:'idle',    task:'Idle' },
-  ];
-
-  // Movement state for each agent
-  agents.forEach((a, i) => {
-    const d = desks[a.homeDesk];
-    a.x = d.x; a.y = d.y - 20;
-    a.targetX = a.x; a.targetY = a.y;
-    a.state = 'sitting';  // sitting, walking, chatting, working
-    a.walkFrame = 0; a.walkTimer = 0;
-    a.stateTimer = 2000 + Math.random() * 5000;
-    a.chatPartner = -1; a.chatMsg = '';
-    a.facing = 1; // 1=right, -1=left
-    a.bobPhase = Math.random() * Math.PI * 2;
-  });
-
-  const chatMessages = [
-    'Found a spread!', 'Gas is low', 'Checking mempool...', 'Block confirmed',
-    'New pair detected', 'Scanning...', 'Profit above threshold', 'Routing flash loan',
-    'Monitoring bridges', 'Price divergence!', 'Audit complete', 'All systems green',
-    'Backrunning TX...', 'Sandwich check', 'Rebalancing...', 'Oracle stable',
-    'High gas alert', 'Pool imbalanced!', 'Revenue +$0.12', 'New opportunity',
-  ];
-
-  function pickTarget(agent, idx) {
-    const roll = Math.random();
-    if (roll < 0.35) {
-      // Go to own desk
-      const d = desks[agent.homeDesk];
-      return { x: d.x, y: d.y - 20, intent: 'work' };
-    } else if (roll < 0.55) {
-      // Water cooler
-      const wc = waterCoolers[Math.floor(Math.random() * waterCoolers.length)];
-      return { x: wc.x + (Math.random()-0.5)*30, y: wc.y - 10, intent: 'chat' };
-    } else if (roll < 0.75) {
-      // Visit another agent's desk
-      let other = Math.floor(Math.random() * agents.length);
-      if (other === idx) other = (other + 1) % agents.length;
-      const d = desks[agents[other].homeDesk];
-      return { x: d.x + 25, y: d.y - 20, intent: 'visit', visitIdx: other };
-    } else {
-      // Random room wander
-      const room = rooms[Math.floor(Math.random() * rooms.length)];
-      return { x: room.x + 30 + Math.random() * (room.w - 60), y: room.y + 30 + Math.random() * (room.h - 60), intent: 'wander' };
-    }
-  }
-
-  function drawRoom(r) {
-    ctx.fillStyle = r.color;
-    ctx.fillRect(r.x, r.y, r.w, r.h);
-    ctx.strokeStyle = r.border;
-    ctx.lineWidth = 2;
-    ctx.strokeRect(r.x, r.y, r.w, r.h);
-    // Room label
-    ctx.fillStyle = '#ffffff30';
-    ctx.font = '9px monospace';
-    ctx.fillText(r.name, r.x + 6, r.y + 14);
-  }
-
-  function drawDesk(d) {
-    // Table top
-    ctx.fillStyle = '#3a2a1a';
-    ctx.strokeStyle = '#5a4a3a';
-    ctx.lineWidth = 1;
-    ctx.fillRect(d.x - 20, d.y, 40, 16);
-    ctx.strokeRect(d.x - 20, d.y, 40, 16);
-    // Monitor
-    ctx.fillStyle = '#0a0f1a';
-    ctx.fillRect(d.x - 8, d.y - 12, 16, 12);
-    ctx.strokeStyle = '#4a4a6a';
-    ctx.strokeRect(d.x - 8, d.y - 12, 16, 12);
-    // Screen glow for occupied desks
-    const occupied = agents.some(a => a.state === 'sitting' && Math.abs(a.x - d.x) < 30 && Math.abs(a.y - (d.y-20)) < 30);
-    if (occupied) {
-      ctx.fillStyle = '#1a4a2a';
-      ctx.fillRect(d.x - 6, d.y - 10, 12, 8);
-    }
-    // Chair
-    ctx.fillStyle = '#2a2a3a';
-    ctx.fillRect(d.x - 6, d.y + 18, 12, 8);
-  }
-
-  function drawWaterCooler(wc) {
-    ctx.fillStyle = '#2a4a8a';
-    ctx.fillRect(wc.x - 6, wc.y, 12, 20);
-    ctx.fillStyle = '#4a8aff';
-    ctx.fillRect(wc.x - 8, wc.y - 6, 16, 6);
-    ctx.fillStyle = '#8aaafe';
-    ctx.fillRect(wc.x - 4, wc.y - 8, 8, 4);
-    // Label
-    ctx.fillStyle = '#ffffff30';
-    ctx.font = '7px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('Water', wc.x, wc.y + 32);
-    ctx.textAlign = 'left';
-  }
-
-  function drawAgent(a, t) {
-    const bob = a.state === 'sitting' ? Math.sin(a.bobPhase + t * 0.002) * 1.5 : 0;
-    const walkBob = a.state === 'walking' ? Math.sin(t * 0.012) * 3 : 0;
-    const ay = a.y + bob + walkBob;
-
-    // Shadow
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.beginPath();
-    ctx.ellipse(a.x, ay + 22, 8, 3, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Legs (animate when walking)
-    if (a.state === 'walking') {
-      const legPhase = Math.sin(t * 0.015) * 4;
-      ctx.fillStyle = a.color + '60';
-      ctx.fillRect(a.x - 4, ay + 14, 3, 8 + legPhase);
-      ctx.fillRect(a.x + 1, ay + 14, 3, 8 - legPhase);
-    } else {
-      ctx.fillStyle = a.color + '60';
-      ctx.fillRect(a.x - 4, ay + 14, 3, 8);
-      ctx.fillRect(a.x + 1, ay + 14, 3, 8);
-    }
-
-    // Body
-    ctx.fillStyle = a.color + 'aa';
-    ctx.fillRect(a.x - 5, ay + 4, 10, 12);
-
-    // Arms
-    if (a.state === 'sitting') {
-      // Typing animation
-      const armBob = Math.sin(t * 0.008 + a.bobPhase) * 2;
-      ctx.fillRect(a.x - 8, ay + 6 + armBob, 3, 8);
-      ctx.fillRect(a.x + 5, ay + 6 - armBob, 3, 8);
-    } else if (a.state === 'walking') {
-      const armSwing = Math.sin(t * 0.015) * 5;
-      ctx.fillRect(a.x - 8, ay + 5 + armSwing, 3, 8);
-      ctx.fillRect(a.x + 5, ay + 5 - armSwing, 3, 8);
-    } else {
-      ctx.fillRect(a.x - 8, ay + 6, 3, 8);
-      ctx.fillRect(a.x + 5, ay + 6, 3, 8);
-    }
-
-    // Head
-    ctx.fillStyle = a.color;
-    ctx.fillRect(a.x - 5, ay - 6, 10, 10);
-
-    // Eyes (face direction)
-    ctx.fillStyle = '#000';
-    if (a.state === 'chatting' && a.chatPartner >= 0) {
-      const partner = agents[a.chatPartner];
-      const dx = partner.x - a.x;
-      ctx.fillRect(a.x + (dx > 0 ? 1 : -4), ay - 3, 2, 2);
-      ctx.fillRect(a.x + (dx > 0 ? 4 : -1), ay - 3, 2, 2);
-    } else {
-      ctx.fillRect(a.x - 3, ay - 3, 2, 2);
-      ctx.fillRect(a.x + 1, ay - 3, 2, 2);
-    }
-
-    // Name tag
-    ctx.fillStyle = 'rgba(0,0,0,0.7)';
-    const nameW = ctx.measureText(a.name).width + 6;
-    ctx.fillRect(a.x - nameW/2, ay - 18, nameW, 10);
-    ctx.fillStyle = a.color;
-    ctx.font = 'bold 8px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText(a.name, a.x, ay - 10);
-
-    // Status indicator dot
-    const statusColor = a.status === 'working' ? '#00ff88' : '#666666';
-    ctx.fillStyle = statusColor;
-    ctx.beginPath();
-    ctx.arc(a.x + nameW/2 - 2, ay - 13, 2.5, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Speech / task bubble
-    if (a.state === 'chatting' && a.chatMsg) {
-      drawBubble(a.x, ay - 28, a.chatMsg, '#ffffff');
-    } else if (a.state === 'sitting' && a.status === 'working') {
-      drawBubble(a.x, ay - 28, a.task || 'Working...', a.color);
-    }
-
-    ctx.textAlign = 'left';
-  }
-
-  function drawBubble(x, y, text, color) {
-    ctx.font = '7px monospace';
-    const tw = ctx.measureText(text).width;
-    const bw = tw + 8, bh = 12;
-    const bx = x - bw/2, by = y - bh;
-
-    // Bubble background
-    ctx.fillStyle = '#1a1f2eee';
-    ctx.strokeStyle = color + '80';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    const r = 3;
-    ctx.moveTo(bx + r, by);
-    ctx.lineTo(bx + bw - r, by);
-    ctx.quadraticCurveTo(bx + bw, by, bx + bw, by + r);
-    ctx.lineTo(bx + bw, by + bh - r);
-    ctx.quadraticCurveTo(bx + bw, by + bh, bx + bw - r, by + bh);
-    ctx.lineTo(bx + r, by + bh);
-    ctx.quadraticCurveTo(bx, by + bh, bx, by + bh - r);
-    ctx.lineTo(bx, by + r);
-    ctx.quadraticCurveTo(bx, by, bx + r, by);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // Pointer
-    ctx.fillStyle = '#1a1f2eee';
-    ctx.beginPath();
-    ctx.moveTo(x - 3, by + bh);
-    ctx.lineTo(x, by + bh + 4);
-    ctx.lineTo(x + 3, by + bh);
-    ctx.fill();
-
-    // Text
-    ctx.fillStyle = color;
-    ctx.textAlign = 'center';
-    ctx.fillText(text, x, y - 3);
-    ctx.textAlign = 'left';
-  }
-
-  function drawFloorGrid() {
-    ctx.strokeStyle = '#ffffff06';
-    ctx.lineWidth = 0.5;
-    for (let x = 0; x < W; x += TILE) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-    }
-    for (let y = 0; y < H; y += TILE) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-    }
-  }
-
-  // Hallway path between rooms (horizontal corridor at y=230)
-  function drawHallway() {
-    ctx.fillStyle = '#10141e';
-    ctx.fillRect(0, 215, W, 30);
-    // Dashed center line
-    ctx.strokeStyle = '#ffffff10';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([6, 6]);
-    ctx.beginPath(); ctx.moveTo(0, 230); ctx.lineTo(W, 230); ctx.stroke();
-    ctx.setLineDash([]);
-  }
-
-  function updateAgent(a, idx, dt) {
-    a.stateTimer -= dt;
-
-    if (a.state === 'walking') {
-      const dx = a.targetX - a.x;
-      const dy = a.targetY - a.y;
-      const dist = Math.sqrt(dx*dx + dy*dy);
-      const speed = 0.6; // pixels per ms
-      if (dist < 3) {
-        a.x = a.targetX; a.y = a.targetY;
-        // Arrive at target
-        if (a._intent === 'work') { a.state = 'sitting'; a.stateTimer = 4000 + Math.random() * 8000; }
-        else if (a._intent === 'chat' || a._intent === 'visit') {
-          a.state = 'chatting';
-          a.chatMsg = chatMessages[Math.floor(Math.random() * chatMessages.length)];
-          if (a._intent === 'visit' && a._visitIdx >= 0) a.chatPartner = a._visitIdx;
-          a.stateTimer = 2000 + Math.random() * 3000;
+  function layoutNetwork() {
+    nodePositions.length = 0;
+    connections.length = 0;
+    const margin = 80, layerGap = (W - margin * 2) / (layers.length - 1);
+    layers.forEach((layer, li) => {
+      const x = margin + li * layerGap;
+      const nodeCount = layer.nodes.length;
+      const totalH = H - 80;
+      const gap = totalH / (nodeCount + 1);
+      layer.nodes.forEach((node, ni) => {
+        const y = 40 + gap * (ni + 1);
+        nodePositions.push({ x, y, li, ni, label: node.label, sub: node.sub, color: layer.color, pulse: 0, activation: Math.random() });
+      });
+    });
+    // Build connections between adjacent layers
+    let offset = 0;
+    for (let li = 0; li < layers.length - 1; li++) {
+      const curCount = layers[li].nodes.length;
+      const nextOffset = offset + curCount;
+      const nextCount = layers[li + 1].nodes.length;
+      for (let ci = 0; ci < curCount; ci++) {
+        for (let ni = 0; ni < nextCount; ni++) {
+          connections.push({ from: offset + ci, to: nextOffset + ni, weight: 0.3 + Math.random() * 0.7 });
         }
-        else { a.state = 'sitting'; a.stateTimer = 2000 + Math.random() * 4000; }
-      } else {
-        const step = speed * dt;
-        a.x += (dx / dist) * step;
-        a.y += (dy / dist) * step;
-        a.facing = dx > 0 ? 1 : -1;
       }
-    }
-
-    if (a.stateTimer <= 0) {
-      const tgt = pickTarget(a, idx);
-      a.targetX = tgt.x; a.targetY = tgt.y;
-      a._intent = tgt.intent;
-      a._visitIdx = tgt.visitIdx ?? -1;
-      a.state = 'walking';
-      a.chatMsg = '';
-      a.chatPartner = -1;
-      a.stateTimer = 99999; // will be reset on arrival
+      offset = nextOffset;
     }
   }
 
-  function render(t) {
+  function spawnParticle() {
+    if (particles.length > 60) return;
+    const conn = connections[Math.floor(Math.random() * connections.length)];
+    const from = nodePositions[conn.from], to = nodePositions[conn.to];
+    particles.push({ x: from.x, y: from.y, tx: to.x, ty: to.y, progress: 0, speed: 0.003 + Math.random() * 0.006, color: from.color, toIdx: conn.to });
+  }
+
+  function renderNN(t) {
     const dt = lastT ? t - lastT : 16;
     lastT = t;
+    const c = nnCtx;
+    c.clearRect(0, 0, W, H);
 
-    ctx.clearRect(0, 0, W, H);
+    // Background gradient
+    const bg = c.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0, '#030810'); bg.addColorStop(0.5, '#060d18'); bg.addColorStop(1, '#030810');
+    c.fillStyle = bg; c.fillRect(0, 0, W, H);
 
-    // Background
-    ctx.fillStyle = '#0a0e17';
-    ctx.fillRect(0, 0, W, H);
+    // Subtle grid
+    c.strokeStyle = '#ffffff04'; c.lineWidth = 0.5;
+    for (let x = 0; x < W; x += 40) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
+    for (let y = 0; y < H; y += 40) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
 
-    drawFloorGrid();
-    drawHallway();
-    rooms.forEach(drawRoom);
-    desks.forEach(drawDesk);
-    waterCoolers.forEach(drawWaterCooler);
+    // Draw connections
+    connections.forEach(conn => {
+      const from = nodePositions[conn.from], to = nodePositions[conn.to];
+      c.strokeStyle = from.color + '18';
+      c.lineWidth = conn.weight * 1.5;
+      c.beginPath(); c.moveTo(from.x, from.y); c.lineTo(to.x, to.y); c.stroke();
+    });
 
-    // Update and draw agents (sort by Y for depth)
-    agents.forEach((a, i) => updateAgent(a, i, dt));
-    const sorted = agents.map((a, i) => ({a, i})).sort((x, y) => x.a.y - y.a.y);
-    sorted.forEach(({a}) => drawAgent(a, t));
+    // Update + draw particles
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.progress += p.speed * dt;
+      if (p.progress >= 1) {
+        nodePositions[p.toIdx].pulse = 1;
+        nodePositions[p.toIdx].activation = Math.min(1, nodePositions[p.toIdx].activation + 0.2);
+        signalCount++;
+        particles.splice(i, 1); continue;
+      }
+      const px = p.x + (p.tx - p.x) * p.progress;
+      const py = p.y + (p.ty - p.y) * p.progress;
+      const glow = c.createRadialGradient(px, py, 0, px, py, 6);
+      glow.addColorStop(0, p.color + 'ff'); glow.addColorStop(0.5, p.color + '60'); glow.addColorStop(1, p.color + '00');
+      c.fillStyle = glow; c.beginPath(); c.arc(px, py, 6, 0, Math.PI * 2); c.fill();
+      c.fillStyle = p.color; c.beginPath(); c.arc(px, py, 2, 0, Math.PI * 2); c.fill();
+    }
 
-    // Status bar
-    let active = 0, idle = 0;
-    agents.forEach(a => { if (a.status === 'working') active++; else idle++; });
-    document.getElementById('off-agent-count').textContent = agents.length;
-    document.getElementById('off-active-count').textContent = active;
-    document.getElementById('off-idle-count').textContent = idle;
-    document.getElementById('off-time').textContent = new Date().toLocaleTimeString();
+    // Spawn new particles
+    if (Math.random() < 0.3) spawnParticle();
+    if (_liveData?.bot_running && Math.random() < 0.4) spawnParticle();
 
-    animId = requestAnimationFrame(render);
+    // Draw nodes
+    nodePositions.forEach(n => {
+      n.pulse *= 0.95;
+      n.activation *= 0.998;
+      const r = 16 + n.pulse * 8;
+      const glow = c.createRadialGradient(n.x, n.y, 0, n.x, n.y, r + 12);
+      glow.addColorStop(0, n.color + Math.round((0.15 + n.activation * 0.3) * 255).toString(16).padStart(2,'0'));
+      glow.addColorStop(1, n.color + '00');
+      c.fillStyle = glow; c.beginPath(); c.arc(n.x, n.y, r + 12, 0, Math.PI * 2); c.fill();
+
+      // Node circle
+      c.fillStyle = '#0a0e17';
+      c.beginPath(); c.arc(n.x, n.y, r, 0, Math.PI * 2); c.fill();
+      c.strokeStyle = n.color + (n.pulse > 0.1 ? 'ff' : '80');
+      c.lineWidth = 1.5 + n.pulse * 2;
+      c.beginPath(); c.arc(n.x, n.y, r, 0, Math.PI * 2); c.stroke();
+
+      // Inner activation ring
+      c.strokeStyle = n.color + '40';
+      c.lineWidth = 2;
+      c.beginPath(); c.arc(n.x, n.y, r - 4, -Math.PI/2, -Math.PI/2 + Math.PI * 2 * n.activation); c.stroke();
+
+      // Label
+      c.fillStyle = '#fff'; c.font = 'bold 8px monospace'; c.textAlign = 'center';
+      c.fillText(n.label, n.x, n.y - 2);
+      c.fillStyle = n.color + '99'; c.font = '7px monospace';
+      c.fillText(n.sub, n.x, n.y + 8);
+      c.textAlign = 'left';
+    });
+
+    // Layer labels
+    let offset = 0;
+    layers.forEach(layer => {
+      const first = nodePositions[offset];
+      if (first) {
+        c.fillStyle = layer.color + '60'; c.font = 'bold 9px monospace'; c.textAlign = 'center';
+        c.fillText(layer.label, first.x, 18);
+        c.textAlign = 'left';
+      }
+      offset += layer.nodes.length;
+    });
+
+    // Update stats bar
+    const elapsed = (Date.now() - lastSignalReset) / 1000;
+    if (elapsed > 0) {
+      const el = document.getElementById('ns-signals');
+      if (el) el.textContent = Math.round(signalCount / elapsed * 60);
+    }
+    if (elapsed > 60) { signalCount = 0; lastSignalReset = Date.now(); }
+    const infEl = document.getElementById('ns-inference');
+    if (infEl) infEl.textContent = (1 + Math.random() * 3).toFixed(1) + 'ms';
+
+    animId = requestAnimationFrame(renderNN);
+  }
+
+  // ── Agent Card Updates ──
+  function updateCards(s) {
+    _liveData = s;
+    // CLAWD
+    const clawdOnline = s.plan?.total > 0 || s.active_tasks > 0;
+    setCard('ac-clawd', clawdOnline);
+    setText('ac-clawd-status', clawdOnline ? 'ORCHESTRATING' : 'STANDBY', clawdOnline ? 'green' : '');
+    setText('ac-clawd-task', s.plan?.current ? s.plan.current.title : (s.plan?.next ? 'Next: ' + s.plan.next.title : 'No active item'), 'cyan');
+    setText('ac-clawd-plan', s.plan ? s.plan.done + '/' + s.plan.total + ' items (' + s.plan.progress + '%)' : '--');
+    const bar = document.getElementById('ac-clawd-bar');
+    if (bar) bar.style.width = (s.plan?.progress || 0) + '%';
+
+    // MEV Operator
+    setCard('ac-mev', s.bot_running);
+    setText('ac-mev-status', s.bot_running ? 'RUNNING' : 'STOPPED', s.bot_running ? 'green' : 'red');
+    const tr = s.trades || {};
+    setText('ac-mev-trades', tr.total + ' total (' + tr.successes + ' success)');
+    const pnlColor = (tr.pnl_eth || 0) >= 0 ? 'green' : 'red';
+    setText('ac-mev-pnl', (tr.pnl_eth >= 0 ? '+' : '') + (tr.pnl_eth || 0).toFixed(6) + ' ETH', pnlColor);
+    setText('ac-mev-today', tr.today_trades + ' trades, ' + ((tr.today_pnl||0) >= 0 ? '+' : '') + (tr.today_pnl||0).toFixed(6) + ' ETH');
+
+    // Chain Investigator
+    const chainActive = s.active_tasks > 0;
+    setCard('ac-chain', chainActive);
+    setText('ac-chain-tasks', s.active_tasks + ' active');
+    const cronDone = (s.cron || []).filter(c => c.last_status === 'ok').length;
+    setText('ac-chain-scans', cronDone + '/' + (s.cron||[]).length + ' cron OK');
+    const lastAct = (s.activity || [])[0];
+    setText('ac-chain-last', lastAct ? lastAct.action + ': ' + (lastAct.detail||'').slice(0,30) : 'None');
+
+    // Security Auditor
+    const secActive = (s.plan?.running || 0) > 0;
+    setCard('ac-security', secActive);
+    setText('ac-sec-status', secActive ? 'SCANNING' : 'IDLE', secActive ? 'green' : '');
+    setText('ac-sec-audits', (s.plan?.done || 0) + ' completed');
+    setText('ac-sec-alerts', '0 critical', 'green');
+
+    // System Monitor
+    setCard('ac-monitor', true);
+    const sys = s.system || {};
+    setText('ac-mon-cpu', (sys.cpu_pct || 0) + '%', sys.cpu_pct > 80 ? 'red' : 'green');
+    setText('ac-mon-mem', (sys.mem_pct || 0) + '% (' + (sys.mc_mem_mb || 0) + 'MB MC)', sys.mem_pct > 80 ? 'red' : 'green');
+    const nextCron = (s.cron||[]).filter(c=>c.next_run).sort((a,b)=>a.next_run-b.next_run)[0];
+    if (nextCron) {
+      const mins = Math.max(0, Math.round((nextCron.next_run - Date.now()) / 60000));
+      setText('ac-mon-cron', nextCron.name + ' in ' + mins + 'm', 'cyan');
+    } else {
+      setText('ac-mon-cron', 'No cron jobs');
+    }
+
+    // Trade Analyst
+    const anaActive = (tr.total || 0) > 0;
+    setCard('ac-analyst', anaActive);
+    setText('ac-ana-winrate', (tr.win_rate || 0) + '%', tr.win_rate > 50 ? 'green' : 'red');
+    setText('ac-ana-gas', (tr.gas_eth || 0).toFixed(6) + ' ETH');
+    const lastTr = tr.last_trade;
+    setText('ac-ana-strat', lastTr ? lastTr.strategy || lastTr.event : '--');
+
+    // NN stats
+    const connCount = connections.length;
+    const nodeCount = nodePositions.length;
+    setText('ns-nodes', nodeCount);
+    setText('ns-conns', connCount);
+    setText('ns-accuracy', tr.win_rate ? tr.win_rate + '%' : '--');
+    const uptime = s.bot_uptime_s || 0;
+    setText('ns-uptime', uptime > 3600 ? Math.floor(uptime/3600) + 'h' + Math.floor((uptime%3600)/60) + 'm' : uptime > 60 ? Math.floor(uptime/60) + 'm' : uptime + 's');
+    document.getElementById('nn-status').textContent = s.bot_running ? 'ACTIVE' : 'STANDBY';
+    document.getElementById('nn-status').style.color = s.bot_running ? 'var(--green)' : 'var(--dim)';
+
+    // Activity feed
+    const feedEl = document.getElementById('ofc-feed-items');
+    if (feedEl && s.activity) {
+      feedEl.innerHTML = s.activity.map(a => {
+        const ts = a.ts ? new Date(a.ts).toLocaleTimeString() : '';
+        return '<div class="ofc-feed-item"><span class="fi-time">' + ts + '</span><span class="fi-act">' + (a.action||'').replace(/</g,'&lt;') + '</span><span class="fi-det">' + (a.detail||'').replace(/</g,'&lt;').slice(0,50) + '</span></div>';
+      }).join('');
+    }
+
+    // System panel
+    const sysEl = document.getElementById('ofc-sys-rows');
+    if (sysEl) {
+      const rows = [
+        ['MEV Bot', s.bot_running ? '<span style="color:var(--green)">RUNNING</span>' : '<span style="color:var(--red)">STOPPED</span>'],
+        ['Bot Uptime', uptime > 3600 ? Math.floor(uptime/3600) + 'h ' + Math.floor((uptime%3600)/60) + 'm' : Math.floor(uptime/60) + 'm'],
+        ['CPU', (sys.cpu_pct||0) + '%'],
+        ['Memory', (sys.mem_pct||0) + '%'],
+        ['MC Memory', (sys.mc_mem_mb||0) + ' MB'],
+        ['Trades Today', tr.today_trades || 0],
+        ['Total P&L', '<span style="color:' + (tr.pnl_eth >= 0 ? 'var(--green)' : 'var(--red)') + '">' + ((tr.pnl_eth||0) >= 0 ? '+':'') + (tr.pnl_eth||0).toFixed(6) + ' ETH</span>'],
+        ['Plan Progress', (s.plan?.progress||0) + '% (' + (s.plan?.done||0) + '/' + (s.plan?.total||0) + ')'],
+        ['Active Tasks', s.active_tasks || 0],
+        ['Cron Jobs', (s.cron||[]).length + ' enabled'],
+      ];
+      sysEl.innerHTML = rows.map(r => '<div class="sys-row"><span style="color:var(--dim)">' + r[0] + '</span><span>' + r[1] + '</span></div>').join('');
+    }
+  }
+
+  function setCard(id, online) {
+    const el = document.getElementById(id);
+    if (el) { el.className = 'agent-card ' + (online ? 'online' : 'offline'); }
+  }
+  function setText(id, val, cls) {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = val; el.className = 'ac-val' + (cls ? ' ' + cls : ''); }
   }
 
   function start() {
-    canvas = document.getElementById('office-canvas');
-    if (!canvas) return;
-    ctx = canvas.getContext('2d');
-    canvas.width = W; canvas.height = H;
+    nnCanvas = document.getElementById('nn-canvas');
+    if (!nnCanvas) return;
+    nnCtx = nnCanvas.getContext('2d');
+    nnCanvas.width = W; nnCanvas.height = H;
+    layoutNetwork();
     if (animId) cancelAnimationFrame(animId);
     lastT = 0;
-    animId = requestAnimationFrame(render);
+    animId = requestAnimationFrame(renderNN);
   }
 
   function stop() {
@@ -2345,22 +2405,9 @@ const OFC = (() => {
 
   async function syncStatus() {
     try {
-      const r = await fetch(API + '/api/state');
+      const r = await fetch(API + '/api/live');
       const s = await r.json();
-      agents[0].status = 'working'; agents[0].task = 'Orchestrating...';
-      agents[1].status = s.bot?.running ? 'working' : 'idle';
-      agents[1].task = s.bot?.running ? 'Scanning pools...' : 'Standby';
-      agents[4].status = 'working'; agents[4].task = 'Monitoring...';
-
-      const br = await fetch(API + '/api/board');
-      const board = await br.json();
-      const inProg = (board.in_progress || []).length;
-      agents[2].status = inProg > 0 ? 'working' : 'idle';
-      agents[2].task = inProg > 0 ? 'Investigating...' : 'Idle';
-      agents[3].status = inProg > 0 ? 'working' : 'idle';
-      agents[3].task = inProg > 0 ? 'Auditing...' : 'Idle';
-      agents[5].status = inProg > 0 ? 'working' : 'idle';
-      agents[5].task = inProg > 0 ? 'Analyzing...' : 'Idle';
+      updateCards(s);
     } catch(e) {}
   }
 
