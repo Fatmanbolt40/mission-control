@@ -179,6 +179,36 @@ tr:hover { background: var(--bg3); }
 .activity-item .act-icon { width: 18px; text-align: center; }
 .activity-item .act-detail { flex: 1; }
 
+/* AI Task Cards */
+.ai-task-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s;
+}
+.ai-task-card:hover { border-color: var(--blue); }
+.ai-task-card .atc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.ai-task-card .atc-status {
+  font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: bold; text-transform: uppercase;
+}
+.ai-task-card .atc-status.pending { background: #1a1a2e; color: var(--dim); }
+.ai-task-card .atc-status.running { background: #1a2a1a; color: var(--green); animation: statusPulse 1.5s ease-in-out infinite; }
+.ai-task-card .atc-status.done { background: #0d1a2e; color: var(--blue); }
+.ai-task-card .atc-status.error { background: #2e0d0d; color: var(--red); }
+.ai-task-card .atc-status.timeout { background: #2e1a0d; color: var(--yellow); }
+.ai-task-card .atc-msg { font-size: 12px; margin-bottom: 6px; }
+.ai-task-card .atc-preview { font-size: 11px; color: var(--dim); padding: 6px 8px; background: var(--bg3); border-radius: 4px; white-space: pre-wrap; max-height: 60px; overflow: hidden; font-family: 'JetBrains Mono', monospace; }
+.ai-task-card .atc-time { font-size: 10px; color: var(--dim); }
+@keyframes statusPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+.ai-task-card .atc-thinking {
+  display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: var(--green);
+}
+.ai-task-card .atc-thinking .dot-anim span {
+  display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: var(--green);
+  animation: dotBounce 1.4s ease-in-out infinite;
+}
+.ai-task-card .atc-thinking .dot-anim span:nth-child(2) { animation-delay: 0.2s; }
+.ai-task-card .atc-thinking .dot-anim span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dotBounce { 0%,80%,100% { opacity:0.3; } 40% { opacity:1; } }
+
 /* New task modal */
 .modal-overlay {
   display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -353,9 +383,17 @@ tr:hover { background: var(--bg3); }
 <div class="tab-content active" id="tab-board">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
     <h3 style="color:var(--dim);font-size:12px">TASK BOARD</h3>
-    <div style="display:flex;gap:8px">
+    <div style="display:flex;gap:8px;align-items:center">
+      <select id="board-filter-project" onchange="filterBoard()" style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:3px 6px;font-size:10px">
+        <option value="">All Projects</option>
+      </select>
+      <select id="board-filter-assignee" onchange="filterBoard()" style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:3px 6px;font-size:10px">
+        <option value="">All Assignees</option>
+        <option value="clawd">CLAWD</option>
+        <option value="user">Oshea</option>
+      </select>
       <button class="btn sm" onclick="openNewTaskModal()">+ New Task</button>
-      <button class="btn sm" onclick="refreshBoard()">Refresh</button>
+      <button class="btn sm" onclick="refreshBoard()">↻</button>
     </div>
   </div>
   <div class="kanban" id="kanban-board">
@@ -394,7 +432,19 @@ tr:hover { background: var(--bg3); }
     <button class="btn sm" onclick="quickAction('Check system health: CPU, memory, disk, running processes')">🖥️ System Health</button>
     <button class="btn sm" onclick="quickAction('List all running Python and Node processes with their command lines')">🔍 Processes</button>
   </div>
-  <h3 style="color:var(--dim);font-size:12px;margin-bottom:8px">TASK QUEUE</h3>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0 8px">
+    <h3 style="color:var(--dim);font-size:12px">AI TASK QUEUE <span id="task-count" style="color:var(--blue)"></span></h3>
+    <div style="display:flex;gap:6px">
+      <select id="task-filter" onchange="refreshTasks()" style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:3px 6px;font-size:10px">
+        <option value="">All</option>
+        <option value="running">Running</option>
+        <option value="done">Done</option>
+        <option value="error">Error</option>
+        <option value="pending">Pending</option>
+      </select>
+      <button class="btn sm" onclick="refreshTasks()">↻</button>
+    </div>
+  </div>
   <div id="task-list"><span style="color:var(--dim)">No tasks yet. Send a command above.</span></div>
 </div>
 
@@ -539,6 +589,62 @@ tr:hover { background: var(--bg3); }
       </div>
     </div>
     <div class="doc-viewer-body" id="doc-viewer-body"></div>
+  </div>
+</div>
+
+<!-- Edit Task Modal -->
+<div class="modal-overlay" id="edit-task-modal" onclick="if(event.target===this)closeModal('edit-task-modal')">
+  <div class="modal" style="width:480px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3>Edit Task</h3>
+      <button class="btn sm" style="border-color:var(--red);color:var(--red)" onclick="deleteEditTask()">Delete</button>
+    </div>
+    <input type="hidden" id="et-id">
+    <label>Title</label>
+    <input type="text" id="et-title">
+    <label>Description</label>
+    <textarea id="et-desc" style="min-height:80px"></textarea>
+    <div style="display:flex;gap:8px">
+      <div style="flex:1"><label>Status</label>
+        <select id="et-status"><option value="backlog">Backlog</option><option value="in_progress">In Progress</option><option value="review">Review</option><option value="done">Done</option></select>
+      </div>
+      <div style="flex:1"><label>Assignee</label>
+        <select id="et-assignee"><option value="clawd">CLAWD (H)</option><option value="user">Oshea (A)</option></select>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div style="flex:1"><label>Priority</label>
+        <select id="et-priority"><option value="medium">Medium</option><option value="urgent">Urgent</option><option value="high">High</option><option value="low">Low</option></select>
+      </div>
+      <div style="flex:1"><label>Project</label>
+        <select id="et-project"><option value="">None</option></select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('edit-task-modal')">Cancel</button>
+      <button class="btn" style="border-color:var(--green);color:var(--green)" onclick="saveEditTask()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI Task Detail Modal -->
+<div class="modal-overlay" id="ai-task-modal" onclick="if(event.target===this)closeModal('ai-task-modal')">
+  <div class="modal" style="width:620px;max-height:80vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3>AI Task Detail</h3>
+      <span id="ait-status" style="font-size:11px;padding:2px 8px;border-radius:4px"></span>
+    </div>
+    <div id="ait-message" style="margin:8px 0;padding:10px;background:var(--bg3);border-radius:6px;font-size:12px"></div>
+    <label>AI Output</label>
+    <div id="ait-result" style="padding:10px;background:#0a0a14;border:1px solid var(--border);border-radius:6px;font-size:11px;white-space:pre-wrap;max-height:300px;overflow-y:auto;font-family:'JetBrains Mono',monospace"></div>
+    <div id="ait-stderr-section" style="display:none">
+      <label style="margin-top:8px">Stderr / Errors</label>
+      <div id="ait-stderr" style="padding:10px;background:#1a0a0a;border:1px solid #4a1a1a;border-radius:6px;font-size:11px;white-space:pre-wrap;max-height:150px;overflow-y:auto;color:var(--red);font-family:'JetBrains Mono',monospace"></div>
+    </div>
+    <div id="ait-meta" style="margin-top:8px;font-size:10px;color:var(--dim)"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('ai-task-modal')">Close</button>
+    </div>
   </div>
 </div>
 
@@ -689,23 +795,37 @@ async function pollTask(tid) {
   }
 }
 
+let _aiTasks = [];
+
 async function refreshTasks() {
   try {
     const r = await fetch(API + '/api/tasks');
     const data = await r.json();
+    _aiTasks = data.tasks || [];
     const el = document.getElementById('task-list');
-    if (!data.tasks || data.tasks.length === 0) {
-      el.innerHTML = '<span style="color:var(--dim)">No tasks yet.</span>';
+    const filter = document.getElementById('task-filter')?.value || '';
+    let tasks = _aiTasks;
+    if (filter) tasks = tasks.filter(t => t.status === filter);
+    const runCount = _aiTasks.filter(t => t.status === 'running').length;
+    document.getElementById('task-count').textContent = runCount > 0 ? `(${runCount} running)` : `(${_aiTasks.length})`;
+    if (!tasks.length) {
+      el.innerHTML = '<span style="color:var(--dim)">' + (filter ? 'No ' + filter + ' tasks.' : 'No tasks yet. Send a command above.') + '</span>';
       return;
     }
-    el.innerHTML = data.tasks.map(t => `
-      <div class="task-item">
-        <span class="task-status ${t.status}">${t.status.toUpperCase()}</span>
-        <span style="margin-left:8px;color:var(--dim);font-size:11px">${t.submitted ? t.submitted.slice(11,19) : ''}</span>
-        <div style="margin-top:4px">${esc(t.message)}</div>
-        ${t.result ? `<div class="task-result">${esc(t.result)}</div>` : ''}
+    el.innerHTML = tasks.map(t => {
+      const isRunning = t.status === 'running';
+      const thinkingDots = isRunning ? '<span class="atc-thinking">Thinking<span class="dot-anim"><span></span><span></span><span></span></span></span>' : '';
+      return `
+      <div class="ai-task-card" onclick="openAiTaskDetail('${esc(t.id)}')">
+        <div class="atc-header">
+          <span class="atc-status ${t.status}">${t.status}</span>
+          <span class="atc-time">${t.submitted ? t.submitted.slice(11,19) : ''}</span>
+        </div>
+        <div class="atc-msg">${esc(t.message)}</div>
+        ${thinkingDots}
+        ${t.result ? `<div class="atc-preview">${esc(t.result).slice(0,200)}</div>` : ''}
       </div>
-    `).join('');
+    `}).join('');
   } catch(e) {}
 }
 
@@ -966,13 +1086,17 @@ async function refreshBoard() {
 }
 
 function renderBoard() {
+  const filterProj = document.getElementById('board-filter-project').value;
+  const filterAssignee = document.getElementById('board-filter-assignee').value;
   const cols = ['backlog','in_progress','review','done'];
   cols.forEach(col => {
     const el = document.getElementById('col-' + col);
-    const cards = _boardData[col] || [];
+    let cards = _boardData[col] || [];
+    if (filterProj) cards = cards.filter(t => String(t.project_id) === filterProj);
+    if (filterAssignee) cards = cards.filter(t => t.assignee === filterAssignee);
     document.getElementById('cnt-' + col).textContent = cards.length;
     el.innerHTML = cards.map(t => `
-      <div class="kanban-card" draggable="true" ondragstart="dragStart(event,${t.id})" data-id="${t.id}">
+      <div class="kanban-card" draggable="true" ondragstart="dragStart(event,${t.id})" onclick="openEditTask(${t.id})" data-id="${t.id}">
         <div class="card-title">${esc(t.title)}</div>
         ${t.description ? `<div class="card-desc">${esc(t.description).slice(0,80)}</div>` : ''}
         <div class="card-meta">
@@ -1043,6 +1167,102 @@ async function submitNewTask() {
     refreshBoard();
     refreshActivity();
   } catch(e) { console.error(e); }
+}
+
+function filterBoard() { renderBoard(); }
+
+// Populate board project filter
+async function populateBoardFilters() {
+  try {
+    const r = await fetch(API + '/api/projects');
+    const data = await r.json();
+    const sel = document.getElementById('board-filter-project');
+    sel.innerHTML = '<option value="">All Projects</option>' +
+      (data.projects||[]).map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('');
+  } catch(e) {}
+}
+populateBoardFilters();
+
+// ── Edit Task Modal ──
+async function openEditTask(taskId) {
+  // Find task from board data
+  let task = null;
+  for (const col of ['backlog','in_progress','review','done']) {
+    task = (_boardData[col]||[]).find(t => t.id === taskId);
+    if (task) { task._col = col; break; }
+  }
+  if (!task) return;
+
+  document.getElementById('et-id').value = task.id;
+  document.getElementById('et-title').value = task.title || '';
+  document.getElementById('et-desc').value = task.description || '';
+  document.getElementById('et-status').value = task._col;
+  document.getElementById('et-assignee').value = task.assignee || 'clawd';
+  document.getElementById('et-priority').value = task.priority || 'medium';
+
+  // Populate project dropdown
+  try {
+    const r = await fetch(API + '/api/projects');
+    const data = await r.json();
+    const sel = document.getElementById('et-project');
+    sel.innerHTML = '<option value="">None</option>' +
+      (data.projects||[]).map(p => `<option value="${p.id}"${p.id==task.project_id?' selected':''}>${esc(p.name)}</option>`).join('');
+  } catch(e) {}
+
+  document.getElementById('edit-task-modal').classList.add('show');
+  document.getElementById('et-title').focus();
+}
+
+async function saveEditTask() {
+  const id = document.getElementById('et-id').value;
+  const body = {
+    title: document.getElementById('et-title').value.trim(),
+    description: document.getElementById('et-desc').value.trim(),
+    status: document.getElementById('et-status').value,
+    assignee: document.getElementById('et-assignee').value,
+    priority: document.getElementById('et-priority').value,
+    project_id: document.getElementById('et-project').value || null,
+  };
+  if (!body.title) return;
+  try {
+    await fetch(API + '/api/board/task/' + id, {
+      method: 'PUT', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    closeModal('edit-task-modal');
+    refreshBoard();
+    refreshActivity();
+  } catch(e) { console.error(e); }
+}
+
+async function deleteEditTask() {
+  const id = document.getElementById('et-id').value;
+  if (!confirm('Delete this task?')) return;
+  try {
+    await fetch(API + '/api/board/task/' + id, { method: 'DELETE' });
+    closeModal('edit-task-modal');
+    refreshBoard();
+    refreshActivity();
+  } catch(e) { console.error(e); }
+}
+
+// ── AI Task Detail Modal ──
+function openAiTaskDetail(tid) {
+  const task = _aiTasks.find(t => t.id === tid);
+  if (!task) return;
+  const statusColors = {pending:'var(--dim)',running:'var(--green)',done:'var(--blue)',error:'var(--red)',timeout:'var(--yellow)'};
+  document.getElementById('ait-status').textContent = (task.status||'').toUpperCase();
+  document.getElementById('ait-status').style.cssText = `font-size:11px;padding:2px 8px;border-radius:4px;background:${task.status==='running'?'#1a2a1a':task.status==='error'?'#2e0d0d':'var(--bg3)'};color:${statusColors[task.status]||'var(--dim)'}`;
+  document.getElementById('ait-message').textContent = task.message || '';
+  document.getElementById('ait-result').textContent = task.result || (task.status === 'running' ? 'AI is working on this task...' : 'No output yet.');
+  if (task.stderr) {
+    document.getElementById('ait-stderr-section').style.display = 'block';
+    document.getElementById('ait-stderr').textContent = task.stderr;
+  } else {
+    document.getElementById('ait-stderr-section').style.display = 'none';
+  }
+  document.getElementById('ait-meta').textContent = `Submitted: ${task.submitted || 'N/A'} \u2022 ID: ${task.id}`;
+  document.getElementById('ai-task-modal').classList.add('show');
 }
 
 // ══════════════════════════════════════════════════════════════════════
