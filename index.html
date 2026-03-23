@@ -610,23 +610,24 @@ const DEMO_BOARD = {
     { id:1, title:'Research Aerodrome V3 pools', project:'MEV Bot Profitability', priority:'medium', created_at: new Date().toISOString() },
     { id:6, title:'Add Uniswap V4 hooks scanner', project:'MEV Bot Profitability', priority:'low', created_at: new Date().toISOString() },
   ],
-  todo: [
-    { id:2, title:'Optimize gas estimation', project:'MEV Bot Profitability', priority:'high', created_at: new Date().toISOString() },
-    { id:7, title:'Build trade replay tool', project:'CLAWD Autonomy', priority:'medium', created_at: new Date().toISOString() },
-  ],
   in_progress: [
     { id:3, title:'Tune profit thresholds', project:'MEV Bot Profitability', priority:'high', created_at: new Date().toISOString() },
     { id:8, title:'Auto-restart on crash', project:'Mission Control Dashboard', priority:'high', created_at: new Date().toISOString() },
+    { id:2, title:'Optimize gas estimation', project:'MEV Bot Profitability', priority:'high', created_at: new Date().toISOString() },
+  ],
+  review: [
+    { id:7, title:'Build trade replay tool', project:'CLAWD Autonomy', priority:'medium', created_at: new Date().toISOString() },
   ],
   done: [
     { id:4, title:'Deploy flash arb contract', project:'MEV Bot Profitability', priority:'high', created_at: new Date().toISOString() },
     { id:5, title:'Fix P&L pipeline bugs', project:'CLAWD Autonomy', priority:'medium', created_at: new Date().toISOString() },
     { id:9, title:'Animated 2D office', project:'Mission Control Dashboard', priority:'medium', created_at: new Date().toISOString() },
+    { id:10, title:'GitHub Pages deploy', project:'Mission Control Dashboard', priority:'medium', created_at: new Date().toISOString() },
   ],
 };
 const DEMO_PROJECTS = { projects: [
-  { id:1, name:'MEV Bot Profitability', description:'Make the MEV bot consistently profitable on Base L2', status:'active', color:'#00ff88', progress:35, total_tasks:4, task_counts:{backlog:1,todo:1,in_progress:1,done:1} },
-  { id:2, name:'CLAWD Autonomy', description:'Full autonomous CLAWD - task board, heartbeat, self-improving', status:'active', color:'#aa66ff', progress:40, total_tasks:3, task_counts:{todo:1,done:1,in_progress:1} },
+  { id:1, name:'MEV Bot Profitability', description:'Make the MEV bot consistently profitable on Base L2', status:'active', color:'#00ff88', progress:33, total_tasks:5, task_counts:{backlog:2,in_progress:2,done:1} },
+  { id:2, name:'CLAWD Autonomy', description:'Full autonomous CLAWD - task board, heartbeat, self-improving', status:'active', color:'#aa66ff', progress:50, total_tasks:3, task_counts:{review:1,done:1,in_progress:1} },
   { id:3, name:'Mission Control Dashboard', description:'Build and maintain the Mission Control web dashboard', status:'active', color:'#4488ff', progress:66, total_tasks:3, task_counts:{in_progress:1,done:2} },
 ]};
 const DEMO_ACTIVITY = [
