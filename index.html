@@ -968,6 +968,7 @@ setInterval(refreshAll, 10000);
 setInterval(refreshSessions, 30000);
 setInterval(refreshSystem, 30000);
 setInterval(() => { refreshBoard(); refreshActivity(); }, 15000);
+setInterval(() => { OFC.syncStatus(); }, 15000);
 
 // ══════════════════════════════════════════════════════════════════════
 // TASK BOARD
