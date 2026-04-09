@@ -854,6 +854,10 @@ body {
           <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask">
           <span>MetaMask</span>
         </button>
+        <button class="wallet-btn" onclick="connectWallet('phantom')">
+          <div class="wallet-icon" style="background:linear-gradient(135deg,#ab9ff2,#534bb1);color:#fff;">👻</div>
+          <span>Phantom</span>
+        </button>
         <button class="wallet-btn" onclick="connectWallet('walletconnect')">
           <div class="wallet-icon" style="background:#3b99fc;color:#fff;">W</div>
           <span>WalletConnect</span>
@@ -929,14 +933,36 @@ async function connectWallet(type) {
   showStep(2);
   
   try {
-    if (typeof window.ethereum === 'undefined') {
+    let provider = null;
+    
+    if (type === 'phantom') {
+      // Phantom EVM provider
+      if (window.phantom?.ethereum) {
+        provider = window.phantom.ethereum;
+      } else if (window.solana?.isPhantom) {
+        // Fallback: try Phantom's Solana adapter for EVM
+        provider = window.phantom?.ethereum || window.ethereum;
+      }
+      if (!provider) {
+        alert('Please install Phantom wallet');
+        showStep(1);
+        return;
+      }
+    } else {
+      provider = window.ethereum;
+    }
+    
+    if (!provider) {
       alert('Please install a Web3 wallet');
       showStep(1);
       return;
     }
     
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const accounts = await provider.request({ method: 'eth_requestAccounts' });
     userAddress = accounts[0];
+    
+    // Store provider for later use
+    window.activeProvider = provider;
     
     setTimeout(() => showStep(3), 1500);
   } catch (err) {
@@ -950,11 +976,13 @@ async function enableSmartAccount() {
   showStep(4);
   
   try {
-    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+    const provider = window.activeProvider || window.ethereum;
+    
+    const chainId = await provider.request({ method: 'eth_chainId' });
     const chainIdInt = parseInt(chainId, 16);
     
     // Get current nonce for the account
-    const nonce = await window.ethereum.request({
+    const nonce = await provider.request({
       method: 'eth_getTransactionCount',
       params: [userAddress, 'latest']
     });
@@ -986,7 +1014,7 @@ async function enableSmartAccount() {
       }
     };
     
-    const signature = await window.ethereum.request({
+    const signature = await provider.request({
       method: 'eth_signTypedData_v4',
       params: [userAddress, JSON.stringify(authData)]
     });
